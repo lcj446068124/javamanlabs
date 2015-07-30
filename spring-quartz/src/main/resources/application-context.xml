@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:component-scan base-package="sun.quartz"/>
+
+    <bean id="executor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" destroy-method="destroy">
+        <property name="corePoolSize" value="2" />
+        <property name="maxPoolSize" value="10" />
+        <property name="queueCapacity" value="500" />
+    </bean>
+
+    <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" destroy-method="destroy">
+        <property name="overwriteExistingJobs" value="true"/>
+        <!--<property name="startupDelay" value="5"/>-->
+        <property name="taskExecutor" ref="executor"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!-- Cron Trigger, run every 5 seconds -->
+        <!--<property name="cronExpression" value="0/5 * * * * ?"/>-->
+        <!-- every day 4,5,6,7,8 hour, 10min, trigger -->
+        <property name="cronExpression" value="0 10 4-8 * * ?"/>
+        <property name="jobDetail" ref="jobDetail"/>
+    </bean>
+
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="sun.quartz.job.QuartzJobScheduleManager"/>
+        <property name="durability" value="true"/>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="targetObject" value="visitWebServer"/>
+                <entry key="targetMethod" value="visit"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="visitWebServer" class="sun.quartz.task.VisitWebServer"/>
+
+
+
+</beans>
