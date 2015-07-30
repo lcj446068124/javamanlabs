@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+    <context:component-scan base-package="sun.activemq"/>
+
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+        <property name="connectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL" value="failover://(tcp://192.168.218.93:61616?tcpNoDelay=true)"/>
+                <property name="alwaysSyncSend" value="true"/>
+                <property name="useCompression" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Topic subscribe pattern destination -->
+    <bean id="topicDest" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="topic-Dest"/>
+    </bean>
+
+    <!-- Spring JMS Topic template -->
+    <bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="jmsFactory" />
+        <property name="pubSubDomain" value="true"/>
+        <property name="defaultDestination" ref="topicDest"/>
+        <property name="messageIdEnabled" value="true"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <property name="deliveryPersistent" value="true"/>
+    </bean>
+
+    <!-- topic message listener container -->
+    <bean id="topicContainer"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="destination" ref="topicDest"/>
+        <property name="messageListener" ref="topicMessageListener"/>
+        <property name="subscriptionDurable" value="true"/>
+        <property name="clientId" value="BI_WEB_TOPIC_007"/>
+    </bean>
+
+    <bean id="topicMessageListener" class="sun.activemq.listener.TopicMessageListener">
+        <!--<property name="messageConverter" ref="messageConverter"/>-->
+    </bean>
+
+    <bean id="messageConverter" class="sun.activemq.converter.DefaultMessageConverter"/>
+
+
+    <!-- Point-to-Point pattern destination -->
+    <bean id="queueDest" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="queue-Dest" />
+    </bean>
+
+    <bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="jmsFactory" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="defaultDestination" ref="queueDest"/>
+    </bean>
+
+    <bean id="queueContainer"
+          class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="destination" ref="queueDest"/>
+        <property name="messageListener" ref="queueMessageListener"/>
+    </bean>
+
+    <bean id="queueMessageListener" class="sun.activemq.listener.QueueMessageListener">
+        <!--<property name="messageConverter" ref="messageConverter"/>-->
+    </bean>
+
+
+
+</beans>
