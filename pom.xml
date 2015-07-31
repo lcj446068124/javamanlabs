@@ -12,6 +12,7 @@
         <module>spring-quartz</module>
         <module>spring-activemq</module>
         <module>spring-mybatis</module>
+        <module>spring-mvc</module>
     </modules>
 
 
