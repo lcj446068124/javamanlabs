@@ -13,13 +13,16 @@
         <module>spring-activemq</module>
         <module>spring-mybatis</module>
         <module>spring-mvc</module>
+        <module>spring-redis</module>
     </modules>
 
 
     <properties>
         <java-version>1.6</java-version>
-        <spring.version>4.1.6.RELEASE</spring.version>
-        <org.aspectj-version>1.7.4</org.aspectj-version>
+        <spring.version>4.2.2.RELEASE</spring.version>
+        <junit.version>4.12</junit.version>
+        <slf4j.version>1.7.12</slf4j.version>
+        <log4j.version>1.2.17</log4j.version>
     </properties>
 
     <dependencies>
@@ -63,6 +66,12 @@
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
 
         <!-- Test -->
         <dependency>
@@ -74,13 +83,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>1.3</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -89,17 +92,17 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+            <version>${log4j.version}</version>
         </dependency>
 
     </dependencies>
