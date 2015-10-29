@@ -26,7 +26,6 @@ public class KeyValuePairsCacheKey extends AbstractCacheKey<Map<String, Object>>
 
     @Override
     public String getCacheKey() {
-        if (this.map.size() > 0) {    // Overwrite inner cacheKey
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
@@ -35,10 +34,9 @@ public class KeyValuePairsCacheKey extends AbstractCacheKey<Map<String, Object>>
                         .append(CacheKeyGenerator.KEY_VALUE_SEPARATOR)
                         .append(value).append(CacheKeyGenerator.KEY_VALUE_PAIRS_SEPARATOR);
             }
+            // Maintain the inner cacheKey value which is transferred to parseCacheKey() for parsing.
+            this.cacheKey = sb.toString();
             return sb.toString();
-        } else {
-            return this.cacheKey;
-        }
     }
 
     @Override

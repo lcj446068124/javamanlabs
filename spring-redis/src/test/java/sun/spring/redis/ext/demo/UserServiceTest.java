@@ -20,6 +20,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetUser() throws Exception {
-        userService.getUser("xxx");
+        User user = userService.getUser("xxxx");
+        System.out.println(user);
     }
 }

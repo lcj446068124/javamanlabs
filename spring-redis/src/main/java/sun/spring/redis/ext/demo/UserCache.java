@@ -14,7 +14,10 @@ public class UserCache extends CacheSupport<User, Map<String, Object>> {
 
     @Override
     public User doGet(CacheKey<Map<String, Object>> key) {
-        return null;
+        Map<String, Object> params = key.parseCacheKey();
+        String userName = (String)params.get("userName");
+        System.out.println("params: " + userName);
+        return new User("Tom", 23);
     }
 
     @Override

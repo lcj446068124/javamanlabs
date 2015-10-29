@@ -104,7 +104,11 @@ public class StringCacheStorage<V> implements ICacheStorage<String, V> {
         String value = redisTemplate.execute(new RedisCallback<String>() {
             @Override
             public String doInRedis(RedisConnection connection) throws DataAccessException {
-                return new String(connection.get(key.getBytes(DEFAULT_CHARSET)), DEFAULT_CHARSET);
+               byte[] result = connection.get(key.getBytes(DEFAULT_CHARSET));
+                if(result != null){
+                    return new String(result, DEFAULT_CHARSET);
+                }
+                return null;
             }
         });
         if (value != null) {
@@ -129,4 +133,13 @@ public class StringCacheStorage<V> implements ICacheStorage<String, V> {
         return num;
     }
 
+    @Override
+    public Boolean exists(final String key) {
+        return redisTemplate.execute(new RedisCallback<Boolean>() {
+            @Override
+            public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+                return connection.exists(key.getBytes(DEFAULT_CHARSET));
+            }
+        });
+    }
 }

@@ -66,5 +66,12 @@ public interface ICacheStorage<K, V> extends InitializingBean, DisposableBean {
      */
     Long del(K... keys);
 
+    /**
+     * Return if key is exists. Since Redis 3.0.3 it is possible to specify multiple keys.
+     * @param key
+     * @return
+     */
+    Boolean exists(K key);
+
 }
 
