@@ -7,7 +7,7 @@ public interface ICache<V> {
 
     String getCacheIdentify();
 
-    V get(CacheKeyBuilder keyBuilder);
+    V get(CacheKey cacheKey);
 
 
 }

@@ -1,7 +1,7 @@
 package sun.spring.redis.ext.demo;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import sun.spring.redis.ext.core.CacheKey;
 import sun.spring.redis.ext.core.CacheSupport;
 
 /**
@@ -9,13 +9,15 @@ import sun.spring.redis.ext.core.CacheSupport;
  */
 @Component
 public class UserCache extends CacheSupport<User> {
+
     @Override
-    public User doGet(String key) {
+    public User doGet(CacheKey key) {
+
         return null;
     }
 
     @Override
     public String getCacheIdentify() {
-        return "xx";
+        return "mykey";
     }
 }

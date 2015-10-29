@@ -5,7 +5,11 @@ package sun.spring.redis.ext.core;
  */
 public interface CacheKeyGenerator<K> {
 
-    public static final String KEY_SEPERATOR = "_";
+    String KEY_CONTEXT_SEPARATOR = "_";
 
-    K generate(K key);
+    String KEY_VALUE_PAIRS_SEPARATOR = ";";
+
+    String KEY_VALUE_SEPARATOR = ":";
+
+    String generate(K key);
 }

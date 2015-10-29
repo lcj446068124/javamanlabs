@@ -1,19 +1,22 @@
 package sun.spring.redis.ext.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 /**
  * Created by root on 2015/10/28.
  */
 public abstract class CacheSupport<V> extends AbstractBaseCache<V>
-        implements CacheCallBack<String, V>, CacheKeyGenerator<String>{
-    private ICacheStorage<String, V> storage;
+        implements DaoCallback<CacheKey, V>, CacheKeyGenerator<CacheKey> {
 
     private int timeOut;
 
     private boolean enableTimeOut = false;
 
-    public void setTimeOut(int timeOut){
+    @Autowired
+    protected ICacheStorage<String, V> cacheStorage;
+
+    public void setTimeOut(int timeOut) {
         enableTimeOut = timeOut > 0;
         this.timeOut = timeOut;
     }
@@ -24,32 +27,26 @@ public abstract class CacheSupport<V> extends AbstractBaseCache<V>
         CacheManager.getInstance().registerCache(this);
     }
 
-
     @Override
-    public String generate(String key) {
-        return this.getContext().getCacheIdentify() + KEY_SEPERATOR + doGenerate(key);
+    public String generate(CacheKey key) {
+        return this.getContext().getCacheIdentify() + CacheKeyGenerator.KEY_CONTEXT_SEPARATOR + key.getCacheKey();
     }
 
     @Override
-    public String doGenerate(String key) {
-        return key;
-    }
-
-    @Override
-    public V get(CacheKeyBuilder keyBuilder) {
-        String key = keyBuilder.getCacheKey();
+    public V get(CacheKey cacheKey) {
+        String key = cacheKey.getCacheKey();
         if (StringUtils.isEmpty(key)) {
             throw new RuntimeException("Key not allowed is null or an empty string.");
         }
 
         V value = null;
-        String keyFullName = generate(key);
+        String keyFullName = generate(cacheKey);
         try {
-            value = this.storage.get(keyFullName);
-        }catch (Exception e){
+//            value = this.getCacheStorage().get(keyFullName);
+            value = cacheStorage.get(keyFullName);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
         return value;
     }
 }

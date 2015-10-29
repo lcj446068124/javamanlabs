@@ -1,12 +1,9 @@
 package sun.spring.redis.ext.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import sun.spring.redis.ext.core.ICache;
-import sun.spring.redis.ext.core.KeyValuePairsCacheBuilder;
-
-import javax.annotation.Resource;
+import sun.spring.redis.ext.core.KeyValuePairsCacheKey;
 
 
 /**
@@ -19,6 +16,6 @@ public class UserService {
     private ICache<User> userCache;
 
     public User getUser(String userName){
-        return userCache.get(new KeyValuePairsCacheBuilder().put("userName",userName).build());
+        return userCache.get(new KeyValuePairsCacheKey().put("userName", userName));
     }
 }

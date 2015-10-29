@@ -1,13 +1,19 @@
 package sun.spring.redis.ext.core;
 
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
  * Created by root on 2015/10/28.
  */
-public interface ICacheStorage<K, V> {
+public interface ICacheStorage<K, V> extends InitializingBean, DisposableBean {
 
-    boolean set(K key, V value);
+    Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+    void set(K key, V value);
 
     /**
      * @param key
@@ -15,17 +21,50 @@ public interface ICacheStorage<K, V> {
      * @param expire seconds
      * @return
      */
-    boolean setEx(K key, V value, long expire);
+    void setEx(K key, V value, long expire);
 
-    boolean setNx(K key, V value);
+    /**
+     * Set key to hold string value if key does not exist. In that case, it is equal to
+     * SET, When key already holds a value, no operation is performed. SETNX is short for
+     * "SET if Not eXists".
+     *
+     * @param key
+     * @param value
+     */
+    void setNx(K key, V value);
 
-    boolean mSet(Map<K, V> values);
+    /**
+     * Sets the given keys to their respective values. MSET replaces existing values with
+     * new values, just as regular SET.
+     * MSET is atomic. so all given keys are set at once.
+     *
+     * @param values
+     */
+    void mSet(Map<K, V> values);
 
-    boolean mSetEx(Map<K, V> values, long expire);
+    /**
+     * Sets the given keys to their respective values. MSETNX will not perform any operation
+     * at all even if just a single key already exists.
+     *
+     * @param values
+     */
+    void mSetNX(Map<K, V> values);
 
+    /**
+     * Get the value of key.
+     *
+     * @param key
+     * @return
+     */
     V get(K key);
 
-    void del(K... key);
+    /**
+     * O(N) where N is the number of keys that will be removed.
+     *
+     * @param keys
+     * @return The number of keys that were removed.
+     */
+    Long del(K... keys);
 
 }
 
