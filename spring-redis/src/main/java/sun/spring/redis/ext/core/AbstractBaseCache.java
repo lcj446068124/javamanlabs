@@ -6,7 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Created by root on 2015/10/28.
  */
-public abstract class AbstractBaseCache<V> implements ICache<V>, InitializingBean, DisposableBean{
+public abstract class AbstractBaseCache<V, T> implements ICache<V, T>, InitializingBean, DisposableBean{
     private Context context;
 
     public Context getContext(){

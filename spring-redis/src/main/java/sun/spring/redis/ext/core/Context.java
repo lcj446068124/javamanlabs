@@ -5,9 +5,9 @@ package sun.spring.redis.ext.core;
  */
 public class Context {
 
-    private ICache<?> cache;
+    private ICache<?, ?> cache;
 
-    public Context(ICache<?> cache) {
+    public Context(ICache<?, ?> cache) {
         this.cache = cache;
     }
 

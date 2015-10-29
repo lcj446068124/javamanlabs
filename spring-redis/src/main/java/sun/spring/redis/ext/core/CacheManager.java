@@ -21,7 +21,7 @@ public class CacheManager {
         return instance;
     }
 
-    public <K extends String, V> void registerCache(ICache<V> cache) {
+    public <V, T> void registerCache(ICache<V, T> cache) {
         String uniqueCacheKeyPrefix = cache.getCacheIdentify();
         if (caches.containsKey(uniqueCacheKeyPrefix)) {
             throw new CacheDumplicateException(
@@ -35,8 +35,8 @@ public class CacheManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> ICache<V> getCache(String cacheIdentify) {
-        ICache<V> cache = caches.get(cacheIdentify);
+    public <V, T> ICache<V, T> getCache(String cacheIdentify) {
+        ICache<V, T> cache = caches.get(cacheIdentify);
         if (cache == null) {
             throw new CacheNotFoundException("CacheIdentify: " + cacheIdentify + " not found.");
         }

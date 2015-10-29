@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import sun.spring.redis.ext.core.ICache;
 import sun.spring.redis.ext.core.KeyValuePairsCacheKey;
 
+import java.util.Map;
+
 
 /**
  * Created by root on 2015/10/28.
@@ -13,7 +15,7 @@ import sun.spring.redis.ext.core.KeyValuePairsCacheKey;
 public class UserService {
 
     @Autowired
-    private ICache<User> userCache;
+    private ICache<User, Map<String, Object>> userCache;
 
     public User getUser(String userName){
         return userCache.get(new KeyValuePairsCacheKey().put("userName", userName));
