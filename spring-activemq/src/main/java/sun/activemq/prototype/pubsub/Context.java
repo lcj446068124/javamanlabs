@@ -7,4 +7,8 @@ public class Context {
     public static final String URL = "tcp://192.168.17.129:61616";
     public static final String TOPIC = "Test-Topic";
 
+    public static final String USERNAME = "system";
+
+    public static final String PASSWORD = "manager";
+
 }

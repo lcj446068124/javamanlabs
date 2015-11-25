@@ -10,7 +10,7 @@ import javax.jms.*;
 public class Subscriber {
     public static void main(String[] args) throws JMSException {
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(Context.URL);
-        Connection connection = connectionFactory.createConnection();
+        Connection connection = connectionFactory.createConnection(Context.USERNAME, Context.PASSWORD);
         connection.setClientID("sub-client1");
         connection.start();
 

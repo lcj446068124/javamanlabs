@@ -10,7 +10,7 @@ import javax.jms.*;
 public class Publisher {
     public static void main(String[] args) throws JMSException {
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(Context.URL);
-        Connection connection = connectionFactory.createConnection();
+        Connection connection = connectionFactory.createConnection(Context.USERNAME, Context.PASSWORD);
 
         connection.start();
 
@@ -21,7 +21,7 @@ public class Publisher {
         producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
         TextMessage textMessage = session.createTextMessage();
-        textMessage.setText("This is a topic message");
+        textMessage.setText("This is a topic message 14");
 
         producer.send(textMessage);
 
