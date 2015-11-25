@@ -18,14 +18,14 @@ public class ProgramTransactionTest {
     @Autowired
     private ProgramTransaction programTransaction;
 
-
+    @Ignore
     @Test
     public void testUpdateCustomer() throws Exception {
         int result = programTransaction.updateCustomer();
         assertTrue(result > 0);
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void testDoTransactionInThreadPool(){
         programTransaction.doTransactionInThreadPool();

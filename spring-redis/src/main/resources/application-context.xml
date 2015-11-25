@@ -10,6 +10,7 @@
     <!-- Properties Resource Config -->
     <context:property-placeholder location="classpath*:redis.properties" file-encoding="UTF-8"/>
 
+    <!-- Enable AOP -->
     <aop:aspectj-autoproxy expose-proxy="true"/>
 
     <!-- Jedis ConnectionFactory -->
