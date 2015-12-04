@@ -13,6 +13,8 @@
         <module>spring-activemq</module>
         <module>spring-mybatis</module>
         <module>spring-mvc</module>
+        <module>spring-jmx</module>
+        <module>spring-scheduler</module>
     </modules>
 
 
