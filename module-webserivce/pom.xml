@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spring-integration-demo</artifactId>
+        <groupId>sun.spring.demo</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>module-webservice</artifactId>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <!-- Generates Java sources from XML Schema -->
+                    <execution>
+                        <id>xjc</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <clearOutputDir>true</clearOutputDir>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <extension>false</extension>
+                            <locale>en</locale>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                            <noPackageLevelAnnotations>true</noPackageLevelAnnotations>
+                            <packageName>module.webservice.entity</packageName>
+                            <!-- Place the XSDs in a custom location -->
+                            <sources>
+                                <source>src/main/resources/xsds</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate XSD file from annotated java classes -->
+                    <execution>
+                        <id>schemagen</id>
+                        <goals>
+                            <goal>schemagen</goal>
+                        </goals>
+                        <configuration>
+                            <clearOutputDir>true</clearOutputDir>
+                            <createJavaDocAnnotations>true</createJavaDocAnnotations>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <locale>en</locale>
+                            <sources>
+                                <source>src/main/java/module/webservice/entity</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
