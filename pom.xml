@@ -13,19 +13,30 @@
         <module>spring-activemq</module>
         <module>spring-mybatis</module>
         <module>spring-mvc</module>
+<<<<<<< HEAD
         <module>spring-redis</module>
         <module>module-httpclient</module>
         <module>module-webserivce</module>
+=======
+        <module>spring-jmx</module>
+        <module>spring-scheduler</module>
+>>>>>>> origin/master
     </modules>
 
 
     <properties>
+<<<<<<< HEAD
         <java-version>1.7</java-version>
         <spring.version>4.2.2.RELEASE</spring.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.12</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+=======
+        <java-version>1.6</java-version>
+        <spring.version>4.1.6.RELEASE</spring.version>
+        <org.aspectj-version>1.7.4</org.aspectj-version>
+>>>>>>> origin/master
     </properties>
 
     <dependencies>
@@ -69,12 +80,6 @@
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
 
         <!-- Test -->
         <dependency>
@@ -86,7 +91,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>1.3</version>
             <scope>test</scope>
         </dependency>
 
@@ -95,17 +106,17 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
+            <version>1.2.17</version>
         </dependency>
 
     </dependencies>
