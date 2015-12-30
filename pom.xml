@@ -13,30 +13,22 @@
         <module>spring-activemq</module>
         <module>spring-mybatis</module>
         <module>spring-mvc</module>
-<<<<<<< HEAD
         <module>spring-redis</module>
         <module>module-httpclient</module>
         <module>module-webserivce</module>
-=======
         <module>spring-jmx</module>
         <module>spring-scheduler</module>
->>>>>>> origin/master
     </modules>
 
 
     <properties>
-<<<<<<< HEAD
         <java-version>1.7</java-version>
         <spring.version>4.2.2.RELEASE</spring.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.12</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-=======
-        <java-version>1.6</java-version>
-        <spring.version>4.1.6.RELEASE</spring.version>
         <org.aspectj-version>1.7.4</org.aspectj-version>
->>>>>>> origin/master
     </properties>
 
     <dependencies>

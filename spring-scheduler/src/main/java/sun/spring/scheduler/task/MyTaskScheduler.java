@@ -13,6 +13,5 @@ public class MyTaskScheduler {
     private ThreadPoolTaskScheduler taskScheduler;
 
     public void test(){
-        taskScheduler.
     }
 }

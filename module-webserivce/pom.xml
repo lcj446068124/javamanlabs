@@ -11,53 +11,113 @@
 
     <artifactId>module-webservice</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>2.2.8</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>jaxb2-maven-plugin</artifactId>-->
+                <!--<version>2.2</version>-->
+                <!--<executions>-->
+                    <!--&lt;!&ndash; Generates Java sources from XML Schema &ndash;&gt;-->
+                    <!--<execution>-->
+                        <!--<id>xjc</id>-->
+                        <!--<goals>-->
+                            <!--<goal>xjc</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<clearOutputDir>true</clearOutputDir>-->
+                            <!--<encoding>${project.build.sourceEncoding}</encoding>-->
+                            <!--<extension>false</extension>-->
+                            <!--<locale>en</locale>-->
+                            <!--<noGeneratedHeaderComments>true</noGeneratedHeaderComments>-->
+                            <!--<noPackageLevelAnnotations>true</noPackageLevelAnnotations>-->
+                            <!--<packageName>module.webservice.entity</packageName>-->
+                            <!--&lt;!&ndash; Place the XSDs in a custom location &ndash;&gt;-->
+                            <!--<sources>-->
+                                <!--<source>src/main/resources/xsds/*.xsd</source>-->
+                            <!--</sources>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
+                    <!--&lt;!&ndash; Generate XSD file from annotated java classes &ndash;&gt;-->
+                    <!--<execution>-->
+                        <!--<id>schemagen</id>-->
+                        <!--<goals>-->
+                            <!--<goal>schemagen</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<clearOutputDir>true</clearOutputDir>-->
+                            <!--<createJavaDocAnnotations>true</createJavaDocAnnotations>-->
+                            <!--<encoding>${project.build.sourceEncoding}</encoding>-->
+                            <!--<locale>en</locale>-->
+                            <!--<sources>-->
+                                <!--<source>src/main/java/module/webservice/entity</source>-->
+                            <!--</sources>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.2</version>
-                <executions>
-                    <!-- Generates Java sources from XML Schema -->
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                        <configuration>
-                            <clearOutputDir>true</clearOutputDir>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <extension>false</extension>
-                            <locale>en</locale>
-                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-                            <noPackageLevelAnnotations>true</noPackageLevelAnnotations>
-                            <packageName>module.webservice.entity</packageName>
-                            <!-- Place the XSDs in a custom location -->
-                            <sources>
-                                <source>src/main/resources/xsds</source>
-                            </sources>
-                        </configuration>
-                    </execution>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.4.1</version>
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>wsgen</id>-->
+                        <!--<goals>-->
+                            <!--<goal>wsgen</goal>-->
+                        <!--</goals>-->
 
-                    <!-- Generate XSD file from annotated java classes -->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<destDir>${project.build.outputDirectory}</destDir>-->
+                    <!--<encoding>${project.build.sourceEncoding}</encoding>-->
+                    <!--<genWsdl>true</genWsdl>-->
+                    <!--<verbose>true</verbose>-->
+                    <!--<inlineSchemas>false</inlineSchemas>-->
+                    <!--<packageName>com.foo.ws.test</packageName>-->
+                    <!--<sei>module.webservice.services.example2.Teams</sei>-->
+                    <!--<sourceDestDir>${project.build.directory}/generated-sources/wsgen</sourceDestDir>-->
+                <!--</configuration>-->
+
+
+                <executions>
                     <execution>
-                        <id>schemagen</id>
                         <goals>
-                            <goal>schemagen</goal>
+                            <goal>wsimport</goal>
                         </goals>
-                        <configuration>
-                            <clearOutputDir>true</clearOutputDir>
-                            <createJavaDocAnnotations>true</createJavaDocAnnotations>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <locale>en</locale>
-                            <sources>
-                                <source>src/main/java/module/webservice/entity</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <!-- The name of your generated source package -->
+                    <packageName>module.webservice.services.example.client</packageName>
+                    <wsdlUrls>
+                        <wsdlUrl>
+                            http://localhost:8888/teams?wsdl
+                        </wsdlUrl>
+                    </wsdlUrls>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun.xml.ws</groupId>
+                        <artifactId>jaxws-tools</artifactId>
+                        <version>2.2.10</version>
+                    </dependency>
+                </dependencies>
+
             </plugin>
+
         </plugins>
     </build>
 </project>
