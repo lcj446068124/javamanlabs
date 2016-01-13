@@ -4,9 +4,9 @@
     <!-- This file used by jBoss when deployed in jBoss -->
     <context-root>/</context-root>
 
-    <resource-ref>
-        <res-ref-name>jdbc/oracle_mobile</res-ref-name>
-        <jndi-name>java:/jdbc/oracle_mobile</jndi-name>
-    </resource-ref>
+    <!--<resource-ref>-->
+        <!--<res-ref-name>jdbc/oracle_mobile</res-ref-name>-->
+        <!--<jndi-name>java:/jdbc/oracle_mobile</jndi-name>-->
+    <!--</resource-ref>-->
 
 </jboss-web>

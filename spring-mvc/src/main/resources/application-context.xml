@@ -6,25 +6,8 @@
 
     <context:component-scan base-package="sun.mvc"/>
 
-    <!-- config datasource using jndi -->
-    <bean id="dataSourceOracle" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName" value="jdbc/oracle_mobile"/>
-        <property name="resourceRef" value="true"/>
-    </bean>
 
-    <bean id="dataSourceProxy" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
-        <constructor-arg ref="dataSourceOracle"/>
-    </bean>
+    <!--<import resource="spring-datasource.xml"/>-->
 
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSourceProxy"/>
-    </bean>
-
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="dataSourceProxy"/>
-    </bean>
-
-
+    <!--<import resource="classpath:net/bull/javamelody/monitoring-spring.xml"/>-->
 </beans>
