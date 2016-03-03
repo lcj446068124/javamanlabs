@@ -1,0 +1,8 @@
+<!-- Solve Error: "Couldn't store job: Driver's Blob representation is of an unsupported type: oracle.sql.BLOB"  When deployed in JBoss AS 6-->
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="com.oracle" />
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>
