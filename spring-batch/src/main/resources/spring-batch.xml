@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" destroy-method="destroy">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="30"/>
+    </bean>
+
+    <!-- In-Memory Repository -->
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+
+    <!-- Persist batch metadata in database -->
+    <!--<bean id="jobRepository" class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">-->
+    <!--<property name="transactionManager" ref="transactionManager"/>-->
+    <!--<property name="dataSource" ref="dataSource"/>-->
+    <!--<property name="databaseType" value="MySQL"/>-->
+    <!--<property name="tablePrefix" value="BATCH_"/>-->
+    <!--<property name="isolationLevelForCreate" value="ISOLATION_SERIALIZABLE"/>-->
+    <!--</bean>-->
+
+
+    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="taskExecutor"  ref="taskExecutor"/>
+    </bean>
+
+    <bean id="stepBuilderFactory" class="org.springframework.batch.core.configuration.annotation.StepBuilderFactory">
+        <constructor-arg index="0" ref="jobRepository"/>
+        <constructor-arg index="1" ref="transactionManager"/>
+    </bean>
+
+    <bean id="jobBuilderFactory" class="org.springframework.batch.core.configuration.annotation.JobBuilderFactory">
+        <constructor-arg index="0" ref="jobRepository"/>
+    </bean>
+
+    <bean id="itemReader" class="org.mybatis.spring.batch.MyBatisPagingItemReader">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="pageSize" value="1000"/>
+        <property name="queryId" value=""/>
+    </bean>
+
+    <!-- statementId should be the id of  mapper.xml. It is dynamic here -->
+    <bean id="itemWriter" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="sqlSessionTemplate" ref="sqlSessionTemplate"/>
+        <property name="statementId" value=""/>
+    </bean>
+
+</beans>

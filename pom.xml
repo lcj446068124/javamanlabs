@@ -18,6 +18,7 @@
         <module>module-webserivce</module>
         <module>spring-jmx</module>
         <module>spring-scheduler</module>
+        <module>spring-batch</module>
     </modules>
 
 
