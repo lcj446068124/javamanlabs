@@ -1,8 +1,7 @@
-package sun.batch.tutorial.itemwriter;
+package sun.batch.tutorial.writer;
 
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
-import sun.batch.tutorial.entity.Person;
 
 import java.util.List;
 
