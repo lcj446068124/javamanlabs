@@ -2,7 +2,7 @@
 <jboss-web>
 
     <!-- This file used by jBoss when deployed in jBoss -->
-    <context-root>/</context-root>
+    <context-root>/mvc</context-root>
 
     <!--<resource-ref>-->
         <!--<res-ref-name>jdbc/oracle_mobile</res-ref-name>-->

@@ -17,18 +17,13 @@ import javax.annotation.Resource;
 @Component
 public class TransferPersonJob {
 
-    @Resource(name = "transferDataToRedisJob")
+    @Resource(name = "transferPersonToRedisJob")
     private Job job;
-
-    @Autowired
-    private MyBatisPagingItemReader<Person> itemReader;
 
     @Autowired
     private SimpleJobLauncher jobLauncher;
 
     public JobExecution transfer() throws Exception {
-
-        itemReader.setQueryId("sun.batch.tutorial.entity.Person.list");
 
         return jobLauncher.run(job, new JobParameters());
     }

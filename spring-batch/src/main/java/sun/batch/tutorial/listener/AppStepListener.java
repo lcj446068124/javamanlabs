@@ -1,6 +1,7 @@
 package sun.batch.tutorial.listener;
 
 import org.springframework.batch.core.listener.StepListenerSupport;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,4 +13,11 @@ public class AppStepListener<T,S> extends StepListenerSupport<T,S> {
     public void afterRead(T item) {
         System.out.println("after Read item");
     }
+
+    @Override
+    public void afterChunk(ChunkContext context) {
+        super.afterChunk(context);
+    }
+
+
 }
