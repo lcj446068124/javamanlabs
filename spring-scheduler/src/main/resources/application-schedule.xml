@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <task:scheduler id="myScheduler" pool-size="10"/>
+
+    <!-- The Config of Schedule Task -->
+    <bean id="scheduleTaskConfig" class="sun.spring.scheduler.core.ScheduleTaskConfig">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="scheduler" ref="myScheduler"/>
+    </bean>
+
+    <!-- The Base Class of Schedule Task -->
+    <bean id="simpleScheduleTask" class="sun.spring.scheduler.core.SimpleScheduleTask">
+        <property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>
+    </bean>
+
+    <!-- Thread Pool and Tasks Monitor -->
+    <bean id="scheduleMonitor" class="sun.spring.scheduler.core.ScheduleMonitor">
+        <property name="period" value="1000"/>
+        <property name="schedulers">
+            <list>
+                <ref bean="myScheduler"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ##########################################################-->
+    <!--                        Tasks                               -->
+    <!-- ##########################################################-->
+
+    <!-- Demo Task for example -->
+    <bean id="demoTask" class="sun.spring.scheduler.task.DemoTask" parent="simpleScheduleTask"/>
+
+    <task:scheduled-tasks scheduler="myScheduler">
+        <task:scheduled ref="demoTask" method="run" fixed-rate="5000"/>
+    </task:scheduled-tasks>
+
+
+</beans>

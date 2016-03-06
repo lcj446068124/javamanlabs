@@ -8,10 +8,13 @@
 
     <context:annotation-config />
 
-    <task:scheduler id="myScheduler" pool-size="10"/>
-
-    <!--<task:scheduled-tasks scheduler="myScheduler">-->
-        <!--<task:scheduled ref="someObject" method="someMethod" fixed-rate="5000"/>-->
-        <!--<task:scheduled ref="anotherObject" method="anotherMethod" cron="*/5 * * * * MON-FRI"/>-->
-    <!--</task:scheduled-tasks>-->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+    <import resource="spring-database.xml"/>
+    <import resource="application-schedule.xml"/>
 </beans>
