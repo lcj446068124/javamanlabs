@@ -1,4 +1,4 @@
-package sun.spring.scheduler.task;
+package sun.spring.scheduler.demo;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

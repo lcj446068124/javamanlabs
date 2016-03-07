@@ -1,16 +1,15 @@
-package sun.batch.tutorial.processor;
+package sun.spring.scheduler.batch.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
-import sun.batch.tutorial.entity.Company;
-import sun.batch.tutorial.entity.Person;
+import sun.spring.scheduler.demo.Company;
+import sun.spring.scheduler.demo.Person;
 
 /**
  * Created by root on 2016/3/3.
  */
-@Component
 public class JsonConvertProcessor<T> implements ItemProcessor<T, String> {
     private static final Logger logger = LoggerFactory.getLogger(JsonConvertProcessor.class);
 

@@ -50,12 +50,6 @@
         <property name="jobRegistry" ref="jobRegistry"/>
     </bean>
 
-    <!--<bean id="itemReader" class="org.mybatis.spring.batch.MyBatisPagingItemReader">-->
-        <!--<property name="sqlSessionFactory" ref="sqlSessionFactory"/>-->
-        <!--<property name="pageSize" value="1000"/>-->
-        <!--<property name="queryId" value=""/>-->
-    <!--</bean>-->
-
     <bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
         <property name="jobExplorer" ref="jobExplorer"/>
         <property name="jobRepository" ref="jobRepository"/>
@@ -64,13 +58,6 @@
     </bean>
 
     <bean id="runIdIncrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer"/>
-
-    <!-- statementId should be the id of  mapper.xml. It is dynamic here -->
-    <!--<bean id="itemWriter" class="org.mybatis.spring.batch.MyBatisBatchItemWriter" scope="prototype">-->
-        <!--<property name="sqlSessionFactory" ref="sqlSessionFactory"/>-->
-        <!--<property name="sqlSessionTemplate" ref="sqlSessionTemplate"/>-->
-        <!--<property name="statementId" value=""/>-->
-    <!--</bean>-->
 
 
     <!-- ################################################### -->
@@ -91,10 +78,19 @@
                 </batch:skippable-exception-classes>
             </batch:chunk>
             <batch:listeners>
-                <batch:listener ref="appStepListener"/>
+                <batch:listener ref="simpleStepListener"/>
             </batch:listeners>
         </batch:tasklet>
     </batch:step>
+
+    <!-- Step Listener -->
+    <bean id="simpleStepListener" class="sun.spring.scheduler.batch.listener.SimpleStepListener"/>
+
+    <!-- Json Item Writer -->
+    <bean id="jsonItemWriter" class="sun.spring.scheduler.batch.writer.JsonItemWriter"/>
+
+    <!-- Json Convert Processor -->
+    <bean id="jsonConvertProcessor" class="sun.spring.scheduler.batch.processor.JsonConvertProcessor"/>
 
 
     <!-- single thread job -->
@@ -106,7 +102,7 @@
                         <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
                             <property name="pageSize" value="1000"/>
                             <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
-                            <property name="queryId" value="sun.batch.tutorial.entity.Person.list"/>
+                            <property name="queryId" value="sun.spring.scheduler.demo.Person.list"/>
                         </bean>
                     </batch:reader>
                 </batch:chunk>
@@ -125,7 +121,7 @@
                                 <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
                                     <property name="pageSize" value="1000"/>
                                     <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
-                                    <property name="queryId" value="sun.batch.tutorial.entity.Company.list"/>
+                                    <property name="queryId" value="sun.spring.scheduler.demo.Company.list"/>
                                 </bean>
                             </batch:reader>
                         </batch:chunk>
@@ -140,7 +136,7 @@
                                 <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
                                     <property name="pageSize" value="1000"/>
                                     <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
-                                    <property name="queryId" value="sun.batch.tutorial.entity.Person.list"/>
+                                    <property name="queryId" value="sun.spring.scheduler.demo.Person.list"/>
                                 </bean>
                             </batch:reader>
                         </batch:chunk>
@@ -149,5 +145,42 @@
             </batch:flow>
         </batch:split>
     </batch:job>
+
+
+    <!-- ################################################### -->
+    <!--    Schedule Batch Jobs Configuration                -->
+    <!-- ################################################### -->
+    <bean id="launchJobsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
+          destroy-method="destroy">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="30"/>
+    </bean>
+    <!-- Batch Job Dispatcher -->
+    <bean id="jobDispatcher" class="sun.spring.scheduler.batch.JobDispatcher">
+        <property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>
+        <property name="events">
+            <list>
+                <ref bean="demoEvent"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="demoEvent" class="sun.spring.scheduler.demo.DemoEvent">
+        <property name="trigger" ref="demoTrigger"/>
+    </bean>
+
+    <bean id="demoGuard" class="sun.spring.scheduler.demo.DemoGuard"/>
+
+    <bean id="demoTrigger" class="sun.spring.scheduler.demo.DemoTrigger">
+        <property name="jobLauncher" ref="jobLauncher"/>
+        <property name="threadPoolTaskExecutor" ref="launchJobsThreadPool"/>
+        <property name="jobs">
+            <map>
+                <entry key-ref="transferPersonToRedisJob" value-ref="demoGuard"/>
+                <entry key-ref="transferDataToRedisJob" value-ref="demoGuard"/>
+            </map>
+        </property>
+    </bean>
 
 </beans>

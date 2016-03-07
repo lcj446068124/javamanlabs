@@ -17,4 +17,5 @@
     </bean>
     <import resource="spring-database.xml"/>
     <import resource="application-schedule.xml"/>
+    <import resource="spring-batch.xml"/>
 </beans>

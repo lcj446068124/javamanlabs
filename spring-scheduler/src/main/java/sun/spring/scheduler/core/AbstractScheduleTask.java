@@ -22,6 +22,8 @@ import java.util.Date;
 
 /**
  * Created by sunyamorn on 3/6/16.
+ *
+ * Base class for all tasks.
  */
 public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAware, InitializingBean, DisposableBean {
 
@@ -43,6 +45,9 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
     private final String[] fields = new String[]{"TASK_NAME", "TASK_STATUS", "TASK_LOCK", "TASK_GROUP", "TASK_CLASS_NAME", "SCHEDULE_NAME", "LAST_START_TIME", "LAST_END_TIME"};
 
     private TaskContext taskContext;
+
+    protected ScheduleTaskConfig scheduleTaskConfig;
+
 
 
     @Override
@@ -87,7 +92,7 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
     }
 
     private boolean tryLock() {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(getScheduleTaskConfig().getTransactionManager());
+        TransactionTemplate transactionTemplate = new TransactionTemplate(scheduleTaskConfig.getTransactionManager());
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         return transactionTemplate.execute(new TransactionCallback<Boolean>() {
@@ -113,7 +118,7 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
     }
 
     private boolean release() {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(getScheduleTaskConfig().getTransactionManager());
+        TransactionTemplate transactionTemplate = new TransactionTemplate(scheduleTaskConfig.getTransactionManager());
         transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         return transactionTemplate.execute(new TransactionCallback<Boolean>() {
@@ -135,27 +140,23 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        assert (getScheduleTaskConfig() != null);
+        assert (scheduleTaskConfig != null);
 
         // change default value
-        tablePrefix = getScheduleTaskConfig().getTablePrefix();
+        tablePrefix = scheduleTaskConfig.getTablePrefix();
 
-        // skip base class
-        if (this.getClass().getName().equals(SimpleScheduleTask.class.getName())) {
-            return;
-        }
         // init
         TaskEntity entity = queryForObject();
         if (entity == null) {
             // init task context
             status = TaskStatus.WAIT;
-            ThreadGroup threadGroup = getScheduleTaskConfig().getScheduler().getThreadGroup();
+            ThreadGroup threadGroup = scheduleTaskConfig.getScheduler().getThreadGroup();
             if (threadGroup != null) {
                 taskGroup = threadGroup.getName();
             }
             taskClassName = this.getClass().getName();
             lock = EntranceGuard.RELEASE.getStatus();
-            scheduleName = getScheduleTaskConfig().getScheduler().getThreadNamePrefix();
+            scheduleName = scheduleTaskConfig.getScheduler().getThreadNamePrefix();
             if (!insert()) {
                 logger.error("Initialize task record failed.");
             }
@@ -186,8 +187,8 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
     private void refreshTaskContext() {
         taskContext.setScheduleName(this.scheduleName);
         taskContext.setEndTime(this.endTime);
-        taskContext.setScheduler(getScheduleTaskConfig().getScheduler());
-        taskContext.setJdbcTemplate(getScheduleTaskConfig().getJdbcTemplate());
+        taskContext.setScheduler(scheduleTaskConfig.getScheduler());
+        taskContext.setJdbcTemplate(scheduleTaskConfig.getJdbcTemplate());
         taskContext.setLock(this.lock);
         taskContext.setTaskClassName(this.taskClassName);
         taskContext.setStatus(this.status);
@@ -216,7 +217,7 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
 
     private TaskEntity query(String sql) {
         try {
-            return getScheduleTaskConfig().getJdbcTemplate().queryForObject(
+            return scheduleTaskConfig.getJdbcTemplate().queryForObject(
                     sql, new Object[]{this.taskName}, new RowMapper<TaskEntity>() {
                         @Override
                         public TaskEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -250,18 +251,18 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
 
     private boolean insert() {
         String insertSql = String.format("INSERT INTO %s (%s) VALUES (?,?,?,?,?,?,?,?)", tablePrefix + TABLE_NAME, join(fields));
-        return getScheduleTaskConfig().getJdbcTemplate().update(insertSql, taskName, status.getStatus(), lock, taskGroup, taskClassName, scheduleName, null, null) == 1;
+        return scheduleTaskConfig.getJdbcTemplate().update(insertSql, taskName, status.getStatus(), lock, taskGroup, taskClassName, scheduleName, null, null) == 1;
     }
 
     private boolean updateGuardStatus(int status, String timeField) {
         String updateSql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?", tablePrefix + TABLE_NAME, fields[2], timeField, fields[0]);
-        return getScheduleTaskConfig().getJdbcTemplate().update(updateSql, status, new Date(), taskName) == 1;
+        return scheduleTaskConfig.getJdbcTemplate().update(updateSql, status, new Date(), taskName) == 1;
     }
 
     private boolean validation() {
         String updateSql = String.format("UPDATE %s SET %s = ?", tablePrefix + TABLE_NAME, fields[2]);
 
-        return getScheduleTaskConfig().getJdbcTemplate().update(updateSql, EntranceGuard.RELEASE.getStatus()) == 1;
+        return scheduleTaskConfig.getJdbcTemplate().update(updateSql, EntranceGuard.RELEASE.getStatus()) == 1;
     }
 
     private String join(String[] array) {
@@ -273,5 +274,7 @@ public abstract class AbstractScheduleTask implements ScheduleTask, BeanNameAwar
     }
 
 
-    public abstract ScheduleTaskConfig getScheduleTaskConfig();
+    public void setScheduleTaskConfig(ScheduleTaskConfig scheduleTaskConfig) {
+        this.scheduleTaskConfig = scheduleTaskConfig;
+    }
 }
