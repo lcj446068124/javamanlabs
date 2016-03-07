@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-
-    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
+    <!-- Launch batch job thread pool -->
+    <bean id="batchJobExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
           destroy-method="destroy">
         <property name="corePoolSize" value="5"/>
         <property name="maxPoolSize" value="10"/>
         <property name="queueCapacity" value="30"/>
     </bean>
-
-    <!-- In-Memory Repository -->
-    <!--<bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">-->
-    <!--<property name="transactionManager" ref="transactionManager"/>-->
-    <!--</bean>-->
 
     <!-- Persist batch metadata in database -->
     <bean id="jobRepository" class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
@@ -27,7 +23,7 @@
 
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
         <property name="jobRepository" ref="jobRepository"/>
-        <property name="taskExecutor" ref="taskExecutor"/>
+        <property name="taskExecutor" ref="batchJobExecutor"/>
     </bean>
 
     <bean id="stepBuilderFactory" class="org.springframework.batch.core.configuration.annotation.StepBuilderFactory">
@@ -112,7 +108,7 @@
 
     <!-- Parallel Processing -->
     <batch:job id="transferDataToRedisJob" parent="abstractJob">
-        <batch:split id="split1" task-executor="taskExecutor">
+        <batch:split id="split1" task-executor="batchJobExecutor">
             <batch:flow>
                 <batch:step id="stepA" parent="abstractStep">
                     <batch:tasklet>
@@ -150,12 +146,13 @@
     <!-- ################################################### -->
     <!--    Schedule Batch Jobs Configuration                -->
     <!-- ################################################### -->
-    <bean id="launchJobsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
+    <bean id="startJobLaunchThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
           destroy-method="destroy">
         <property name="corePoolSize" value="5"/>
         <property name="maxPoolSize" value="10"/>
         <property name="queueCapacity" value="30"/>
     </bean>
+
     <!-- Batch Job Dispatcher -->
     <bean id="jobDispatcher" class="sun.spring.scheduler.batch.JobDispatcher">
         <property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>
@@ -174,7 +171,7 @@
 
     <bean id="demoTrigger" class="sun.spring.scheduler.demo.DemoTrigger">
         <property name="jobLauncher" ref="jobLauncher"/>
-        <property name="threadPoolTaskExecutor" ref="launchJobsThreadPool"/>
+        <property name="threadPoolTaskExecutor" ref="startJobLaunchThreadPool"/>
         <property name="jobs">
             <map>
                 <entry key-ref="transferPersonToRedisJob" value-ref="demoGuard"/>

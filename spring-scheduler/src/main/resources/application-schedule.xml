@@ -4,29 +4,32 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
 
-    <task:scheduler id="myScheduler" pool-size="10"/>
+    <task:scheduler id="schedulerTaskThreadPool" pool-size="10"/>
 
     <!-- The Config of Schedule Task -->
     <bean id="scheduleTaskConfig" class="sun.spring.scheduler.core.ScheduleTaskConfig">
         <property name="transactionManager" ref="transactionManager"/>
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
-        <property name="scheduler" ref="myScheduler"/>
+        <property name="scheduler" ref="schedulerTaskThreadPool"/>
     </bean>
 
 
     <!-- Thread Pool and Tasks Monitor -->
     <bean id="scheduleMonitor" class="sun.spring.scheduler.core.ScheduleMonitor">
         <property name="period" value="500"/>
-        <property name="schedulers">
+        <property name="taskExecutors">
             <list>
-                <ref bean="myScheduler"/>
+                <ref bean="schedulerTaskThreadPool"/>
+                <ref bean="batchJobExecutor"/>
+                <ref bean="startJobLaunchThreadPool"/>
             </list>
         </property>
+        <property name="redisTemplate" ref="redisTemplate"/>
     </bean>
 
     <!-- Schedule tasks -->
-    <task:scheduled-tasks scheduler="myScheduler">
-        <!--<task:scheduled ref="demoTask" method="run" fixed-rate="5000"/>-->
+    <task:scheduled-tasks scheduler="schedulerTaskThreadPool">
+        <task:scheduled ref="demoTask" method="run" fixed-rate="5000"/>
         <task:scheduled ref="jobDispatcher" method="run" fixed-rate="5000"/>
     </task:scheduled-tasks>
 
@@ -35,9 +38,9 @@
     <!-- ##########################################################-->
 
     <!-- Demo Task for example -->
-    <!--<bean id="demoTask" class="sun.spring.scheduler.demo.DemoTask">-->
-        <!--<property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>-->
-    <!--</bean>-->
+    <bean id="demoTask" class="sun.spring.scheduler.demo.DemoTask">
+        <property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>
+    </bean>
 
 
 

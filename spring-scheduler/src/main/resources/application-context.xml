@@ -9,13 +9,19 @@
     <context:annotation-config />
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="fileEncoding" value="UTF-8"/>
         <property name="locations">
             <list>
-                <value>classpath:jdbc.properties</value>
+                <value>classpath*:jdbc.properties</value>
+                <value>classpath*:redis.properties</value>
             </list>
         </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
     </bean>
+
     <import resource="spring-database.xml"/>
     <import resource="application-schedule.xml"/>
     <import resource="spring-batch.xml"/>
+    <import resource="application-redis.xml"/>
+
 </beans>
