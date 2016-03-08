@@ -18,7 +18,9 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="databaseType" value="MySQL"/>
         <property name="tablePrefix" value="BATCH_"/>
-        <property name="isolationLevelForCreate" value="ISOLATION_SERIALIZABLE"/>
+		
+        <!--<property name="isolationLevelForCreate" value="ISOLATION_SERIALIZABLE"/>-->
+		<property name="isolationLevelForCreate" value="ISOLATION_READ_COMMITTED"/>
     </bean>
 
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
