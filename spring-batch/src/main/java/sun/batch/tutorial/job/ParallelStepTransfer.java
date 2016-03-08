@@ -5,7 +5,9 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import sun.batch.tutorial.support.JobCleaner;
 
 import javax.annotation.Resource;
 
@@ -20,7 +22,13 @@ public class ParallelStepTransfer {
     @Autowired
     private SimpleJobLauncher jobLauncher;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     public JobExecution transfer() throws Exception {
+
+        // clean job
+        new JobCleaner(jdbcTemplate).cleanBeforeJobLaunch(job.getName());
 
         return jobLauncher.run(job, new JobParameters());
     }

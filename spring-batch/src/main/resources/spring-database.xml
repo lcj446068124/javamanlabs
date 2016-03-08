@@ -48,6 +48,9 @@
         <constructor-arg index="1" value="BATCH"/>
     </bean>
 
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
 
 

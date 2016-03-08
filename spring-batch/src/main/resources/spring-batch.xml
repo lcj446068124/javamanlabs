@@ -77,10 +77,15 @@
     <!--                    Job Configuration                -->
     <!-- ################################################### -->
 
+    <bean id="appJobExecutorListener" class="sun.batch.tutorial.listener.AppJobExecutorListener"/>
     <batch:job id="abstractJob"
                restartable="true"
                incrementer="runIdIncrementer"
                job-repository="jobRepository" abstract="true">
+        <batch:listeners>
+            <batch:listener ref="appJobExecutorListener"/>
+        </batch:listeners>
+        <!--<batch:validator ref="jobValidator"/>-->
     </batch:job>
 
     <batch:step id="abstractStep" abstract="true" job-repository="jobRepository">

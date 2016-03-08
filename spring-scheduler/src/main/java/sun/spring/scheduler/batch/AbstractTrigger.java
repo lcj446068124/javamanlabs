@@ -10,6 +10,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ import java.util.concurrent.RunnableFuture;
 public abstract class AbstractTrigger implements Trigger {
 
     protected String name;
+
+    protected JdbcTemplate jdbcTemplate;
 
     private final Object lock = new Object();
 
@@ -74,6 +77,13 @@ public abstract class AbstractTrigger implements Trigger {
                     JobExecution jobExecution = null;
                     try {
                         guard.lock();
+
+                        // clean job before start
+                        if(getJdbcTemplate()!=null){
+                            new JobCleaner(getJdbcTemplate()).cleanBeforeJobLaunch(job.getName());
+                        }
+
+                        // launch job
                         jobExecution = getJobLauncher().run(job, new JobParameters());
                         while (!"COMPLETED".equals(jobExecution.getExitStatus().getExitCode())) {
                             System.out.println("inner: " +jobExecution.getExitStatus().getExitCode());
@@ -114,4 +124,13 @@ public abstract class AbstractTrigger implements Trigger {
 
     public abstract void setJobLauncher(JobLauncher jobLauncher);
 
+    @Override
+    public JdbcTemplate getJdbcTemplate() {
+        return this.jdbcTemplate;
+    }
+
+    @Override
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 }

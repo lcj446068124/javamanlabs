@@ -2,19 +2,16 @@ package sun.spring.scheduler.batch.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.listener.StepListenerSupport;
-import org.springframework.batch.core.scope.context.ChunkContext;
 
 import java.util.List;
 
 /**
  * Created by root on 2016/3/7.
  */
-public class SimpleStepListener <T,S> extends StepListenerSupport<T,S> {
+public class StepErrorListener<T, S> extends StepListenerSupport<T, S> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleStepListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(StepErrorListener.class);
 
     @Override
     public void onReadError(Exception ex) {
@@ -31,11 +28,5 @@ public class SimpleStepListener <T,S> extends StepListenerSupport<T,S> {
         logger.error("Encountered error on write", exception);
     }
 
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        if(stepExecution.getReadCount() == 0){
-            return ExitStatus.NOOP ;
-        }
-        return super.afterStep(stepExecution);
-    }
+
 }

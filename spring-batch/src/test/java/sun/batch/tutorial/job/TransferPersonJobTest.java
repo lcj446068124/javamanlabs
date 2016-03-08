@@ -19,6 +19,7 @@ public class TransferPersonJobTest {
     @Autowired
     private TransferPersonJob transferPersonJob;
 
+
     @Test
     public void testTransfer() throws Exception {
         JobExecution jobExecution = transferPersonJob.transfer();
@@ -26,6 +27,7 @@ public class TransferPersonJobTest {
             System.out.println(jobExecution.getExitStatus().getExitCode());
             Thread.sleep(1000);
         }
+
         assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
     }
 }

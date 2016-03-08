@@ -2,6 +2,7 @@ package sun.spring.scheduler.batch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Map;
@@ -28,6 +29,10 @@ public interface Trigger extends BeanNameAware {
     String getName();
 
     void summary(Map<Job, Guard> jobGuardMap);
+
+    void setJdbcTemplate(JdbcTemplate jdbcTemplate);
+
+    JdbcTemplate getJdbcTemplate();
 
 
 }

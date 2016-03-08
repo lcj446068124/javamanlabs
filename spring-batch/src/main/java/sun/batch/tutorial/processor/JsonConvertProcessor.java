@@ -25,6 +25,8 @@ public class JsonConvertProcessor<T> implements ItemProcessor<T, String> {
 
         }
 
+        Thread.sleep(500);
+
         return "hello world";
     }
 }

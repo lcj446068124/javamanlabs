@@ -15,8 +15,8 @@
 
 
     <!-- Thread Pool and Tasks Monitor -->
-    <bean id="scheduleMonitor" class="sun.spring.scheduler.core.ScheduleMonitor">
-        <property name="period" value="500"/>
+    <bean id="scheduleMonitor" class="sun.spring.scheduler.plugins.ScheduleMonitor">
+        <property name="period" value="1000"/>
         <property name="taskExecutors">
             <list>
                 <ref bean="schedulerTaskThreadPool"/>
@@ -29,8 +29,8 @@
 
     <!-- Schedule tasks -->
     <task:scheduled-tasks scheduler="schedulerTaskThreadPool">
-        <task:scheduled ref="demoTask" method="run" fixed-rate="5000"/>
-        <task:scheduled ref="jobDispatcher" method="run" fixed-rate="5000"/>
+        <!--<task:scheduled ref="demoTask" method="run" fixed-rate="5000"/>-->
+        <task:scheduled ref="jobDispatcher" method="run" fixed-rate="10000"/>
     </task:scheduled-tasks>
 
     <!-- ##########################################################-->
@@ -38,9 +38,9 @@
     <!-- ##########################################################-->
 
     <!-- Demo Task for example -->
-    <bean id="demoTask" class="sun.spring.scheduler.demo.DemoTask">
-        <property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>
-    </bean>
+    <!--<bean id="demoTask" class="sun.spring.scheduler.demo.DemoTask">-->
+        <!--<property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>-->
+    <!--</bean>-->
 
 
 

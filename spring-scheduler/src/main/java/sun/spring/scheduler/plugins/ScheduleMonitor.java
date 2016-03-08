@@ -1,4 +1,4 @@
-package sun.spring.scheduler.core;
+package sun.spring.scheduler.plugins;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.DisposableBean;
@@ -7,6 +7,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import sun.spring.scheduler.core.TaskContext;
+import sun.spring.scheduler.core.TaskRegistrationCenter;
+import sun.spring.scheduler.core.TaskStatusAware;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
