@@ -1,6 +1,6 @@
 package sun.jmx.example2;
 
-import com.sun.jdmk.comm.HtmlAdaptorServer;
+//import com.sun.jdmk.comm.HtmlAdaptorServer;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -39,12 +39,12 @@ import java.lang.management.ManagementFactory;
  */
 public class JmxHttpAdapter {
     public static void main(String[] args) throws Exception{
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
-        HtmlAdaptorServer htmlAdaptorServer = new HtmlAdaptorServer(8888);
-        ObjectName objectName = new ObjectName("Adaptor:name=html,port=8888");
-        mbs.registerMBean(htmlAdaptorServer, objectName);
-        htmlAdaptorServer.start();
-        Thread.sleep(Long.MAX_VALUE);
+//        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+//
+//        HtmlAdaptorServer htmlAdaptorServer = new HtmlAdaptorServer(8888);
+//        ObjectName objectName = new ObjectName("Adaptor:name=html,port=8888");
+//        mbs.registerMBean(htmlAdaptorServer, objectName);
+//        htmlAdaptorServer.start();
+//        Thread.sleep(Long.MAX_VALUE);
     }
 }

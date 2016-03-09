@@ -5,6 +5,6 @@ package sun.spring.scheduler.core;
  */
 public interface TaskStatusAware {
 
-    TaskContext getTaskContext();
+    ScheduleTaskContext getTaskContext();
 
 }

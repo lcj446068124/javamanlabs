@@ -10,7 +10,7 @@
     </resultMap>
 
     <select id="list" resultMap="personResultMapper">
-        select id,name,age from person
+        select id,name,age from person ORDER BY id ASC LIMIT #{_skiprows}, #{_pagesize}
     </select>
 
 </mapper>

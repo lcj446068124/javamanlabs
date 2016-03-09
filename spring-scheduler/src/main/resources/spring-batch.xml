@@ -18,7 +18,8 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="databaseType" value="MySQL"/>
         <property name="tablePrefix" value="BATCH_"/>
-        <property name="isolationLevelForCreate" value="ISOLATION_SERIALIZABLE"/>
+        <!--<property name="isolationLevelForCreate" value="ISOLATION_SERIALIZABLE"/>-->
+        <property name="isolationLevelForCreate" value="ISOLATION_READ_COMMITTED"/>
     </bean>
 
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
@@ -103,7 +104,7 @@
                         <batch:chunk writer="jsonItemWriter" processor="jsonConvertProcessor">
                             <batch:reader>
                                 <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
-                                    <property name="pageSize" value="1000"/>
+                                    <property name="pageSize" value="10"/>
                                     <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
                                     <property name="queryId" value="sun.spring.scheduler.demo.Company.list"/>
                                 </bean>
@@ -118,7 +119,7 @@
                         <batch:chunk writer="jsonItemWriter" processor="jsonConvertProcessor">
                             <batch:reader>
                                 <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
-                                    <property name="pageSize" value="1000"/>
+                                    <property name="pageSize" value="10"/>
                                     <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
                                     <property name="queryId" value="sun.spring.scheduler.demo.Person.list"/>
                                 </bean>
@@ -130,42 +131,5 @@
         </batch:split>
     </batch:job>
 
-
-    <!-- ################################################### -->
-    <!--    Schedule Batch Jobs Configuration                -->
-    <!-- ################################################### -->
-    <bean id="startJobLaunchThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
-          destroy-method="destroy">
-        <property name="corePoolSize" value="5"/>
-        <property name="maxPoolSize" value="10"/>
-        <property name="queueCapacity" value="30"/>
-    </bean>
-
-    <!-- Batch Job Dispatcher -->
-    <bean id="jobDispatcher" class="sun.spring.scheduler.batch.JobDispatcher">
-        <property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>
-        <property name="events">
-            <list>
-                <ref bean="demoEvent"/>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="demoEvent" class="sun.spring.scheduler.demo.DemoEvent">
-        <property name="trigger" ref="demoTrigger"/>
-    </bean>
-
-    <bean id="demoGuard" class="sun.spring.scheduler.demo.DemoGuard"/>
-
-    <bean id="demoTrigger" class="sun.spring.scheduler.demo.DemoTrigger">
-        <property name="jobLauncher" ref="jobLauncher"/>
-        <property name="threadPoolTaskExecutor" ref="startJobLaunchThreadPool"/>
-        <property name="jobs">
-            <map>
-                <entry key-ref="transferDataToRedisJob" value-ref="demoGuard"/>
-            </map>
-        </property>
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
-    </bean>
 
 </beans>

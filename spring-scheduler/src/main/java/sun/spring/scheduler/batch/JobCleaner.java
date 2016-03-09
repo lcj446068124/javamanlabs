@@ -18,7 +18,7 @@ public class JobCleaner {
 
     private static final String FIND_STEP_EXECUTION_ID_SQL = "select step_execution_id from batch_step_execution where job_execution_id=?";
 
-    private static final String DEL_STEP_EXECUTION_SEQ_SQL = "delete from batch_step_execution_seq where step_execution_id=?";
+    private static final String DEL_STEP_EXECUTION_SEQ_SQL = "delete from batch_step_execution_seq where id=?";
 
     private static final String DEL_STEP_EXECUTION_CONTEXT_SQL = "delete from batch_step_execution_context where step_execution_id=?";
 
@@ -46,11 +46,14 @@ public class JobCleaner {
             for (Long jobInstanceId : jobInstances) {
                 Long jobExecutionId = findJobExecutionId(jobInstanceId);
                 if (jobExecutionId != null) {
-                    Long stepExecutionId = findStepExecutionId(jobExecutionId);
-                    if (stepExecutionId != null) {
-                        delete(DEL_STEP_EXECUTION_SEQ_SQL, stepExecutionId);
-                        delete(DEL_STEP_EXECUTION_CONTEXT_SQL, stepExecutionId);
+                    List<Long> stepExecutions = findStepExecutionId(jobExecutionId);
+                    if(stepExecutions!=null && stepExecutions.size()>0){
+                        for (Long stepExecutionId : stepExecutions) {
+                            delete(DEL_STEP_EXECUTION_SEQ_SQL, stepExecutionId);
+                            delete(DEL_STEP_EXECUTION_CONTEXT_SQL, stepExecutionId);
+                        }
                     }
+
                     delete(DEL_STEP_EXECUTION_SQL, jobExecutionId);
                     delete(DEL_JOB_EXECUTION_SEQ_SQL, jobExecutionId);
                     delete(DEL_JOB_EXECUTION_PARAMS_SQL, jobExecutionId);
@@ -75,13 +78,8 @@ public class JobCleaner {
         }, jobInstanceId);
     }
 
-    private Long findStepExecutionId(long jobExecutionId) {
-        return jdbcTemplate.queryForObject(FIND_STEP_EXECUTION_ID_SQL, new RowMapper<Long>() {
-            @Override
-            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getLong(1);
-            }
-        }, jobExecutionId);
+    private List<Long> findStepExecutionId(long jobExecutionId) {
+        return jdbcTemplate.queryForList(FIND_STEP_EXECUTION_ID_SQL, Long.TYPE, jobExecutionId);
     }
 
 

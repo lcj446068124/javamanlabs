@@ -10,7 +10,7 @@
     </resultMap>
 
     <select id="list" resultMap="companyResultMapper">
-        select id,name,address from company
+        select id,name,address from company ORDER BY id ASC LIMIT #{_skiprows}, #{_pagesize}
     </select>
 
 </mapper>

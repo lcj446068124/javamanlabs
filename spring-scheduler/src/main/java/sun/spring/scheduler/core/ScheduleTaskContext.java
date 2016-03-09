@@ -9,22 +9,16 @@ import java.util.Date;
 /**
  * Created by sunyamorn on 3/6/16.
  */
-public class TaskContext {
+public class ScheduleTaskContext {
     
     private Date startTime;
     private Date endTime;
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.WAIT;
     private String taskName;
     private String taskGroup;
     private String taskClassName;
-    private int lock;
+    private int lock = EntranceGuard.RELEASE.getStatus();;
     private String scheduleName;
-
-    private PlatformTransactionManager transactionManager;
-
-    private JdbcTemplate jdbcTemplate;
-
-    private ThreadPoolTaskScheduler scheduler;
 
     public Date getStartTime() {
         return startTime;
@@ -90,27 +84,4 @@ public class TaskContext {
         this.scheduleName = scheduleName;
     }
 
-    public PlatformTransactionManager getTransactionManager() {
-        return transactionManager;
-    }
-
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
-
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public ThreadPoolTaskScheduler getScheduler() {
-        return scheduler;
-    }
-
-    public void setScheduler(ThreadPoolTaskScheduler scheduler) {
-        this.scheduler = scheduler;
-    }
 }

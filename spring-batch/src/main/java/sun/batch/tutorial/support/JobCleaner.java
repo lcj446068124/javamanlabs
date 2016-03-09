@@ -48,7 +48,7 @@ public class JobCleaner {
                 if (jobExecutions != null && jobExecutions.size() > 0) {
                     for (Long jobExecutionId : jobExecutions) {
                         List<Long> stepExecutions = findStepExecutionId(jobExecutionId);
-                        if(stepExecutions!=null && stepExecutions.size() > 0){
+                        if (stepExecutions != null && stepExecutions.size() > 0) {
                             for (Long stepExecutionId : stepExecutions) {
                                 delete(DEL_STEP_EXECUTION_SEQ_SQL, stepExecutionId);
                                 delete(DEL_STEP_EXECUTION_CONTEXT_SQL, stepExecutionId);

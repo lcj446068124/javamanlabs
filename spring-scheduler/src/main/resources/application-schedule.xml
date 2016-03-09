@@ -6,44 +6,48 @@
 
     <task:scheduler id="schedulerTaskThreadPool" pool-size="10"/>
 
+    <task:scheduler id="jobDispatcherThreadPool" pool-size="10"/>
+
     <!-- The Config of Schedule Task -->
-    <bean id="scheduleTaskConfig" class="sun.spring.scheduler.core.ScheduleTaskConfig">
+    <bean id="scheduleTaskConfig" class="sun.spring.scheduler.core.ScheduleJobConfig">
         <property name="transactionManager" ref="transactionManager"/>
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
-        <property name="scheduler" ref="schedulerTaskThreadPool"/>
+        <property name="executorService" ref="schedulerTaskThreadPool"/>
     </bean>
 
 
-    <!-- Thread Pool and Tasks Monitor -->
-    <bean id="scheduleMonitor" class="sun.spring.scheduler.plugins.ScheduleMonitor">
-        <property name="period" value="1000"/>
-        <property name="taskExecutors">
+    <bean id="demoScheduleJobDispatcher" class="sun.spring.scheduler.core.DefaultScheduleJobDispatcher">
+        <property name="executorService" ref="jobDispatcherThreadPool"/>
+        <property name="scheduleJobConfig" ref="scheduleTaskConfig"/>
+        <property name="scheduleTasks">
             <list>
-                <ref bean="schedulerTaskThreadPool"/>
-                <ref bean="batchJobExecutor"/>
-                <ref bean="startJobLaunchThreadPool"/>
+                <!--<ref bean="demoScheduleTask"/>-->
+                <ref bean="demoBatchScheduleTask"/>
             </list>
         </property>
-        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <!--<bean id="demoScheduleTask" class="sun.spring.scheduler.core.DefaultScheduleTask">-->
+    <!--<property name="scheduleTaskDetail" ref="demoTaskDetail"/>-->
+    <!--<property name="scheduleJobConfig" ref="scheduleTaskConfig"/>-->
+    <!--</bean>-->
+    <!--<bean id="demoTaskDetail" class="sun.spring.scheduler.demo.DemoTaskDetail"/>-->
+
+
+    <bean id="demoBatchScheduleTask" class="sun.spring.scheduler.core.DefaultScheduleTask">
+        <property name="scheduleTaskDetail" ref="demoBatchTaskDetail"/>
+        <property name="scheduleJobConfig" ref="scheduleTaskConfig"/>
+    </bean>
+    <bean id="demoBatchTaskDetail" class="sun.spring.scheduler.demo.DemoBatchTaskDetail">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="job" ref="transferDataToRedisJob"/>
+        <property name="jobLauncher" ref="jobLauncher"/>
     </bean>
 
     <!-- Schedule tasks -->
-    <task:scheduled-tasks scheduler="schedulerTaskThreadPool">
-        <!--<task:scheduled ref="demoTask" method="run" fixed-rate="5000"/>-->
-        <task:scheduled ref="jobDispatcher" method="run" fixed-rate="10000"/>
-    </task:scheduled-tasks>
-
-    <!-- ##########################################################-->
-    <!--                        Tasks                               -->
-    <!-- ##########################################################-->
-
-    <!-- Demo Task for example -->
-    <!--<bean id="demoTask" class="sun.spring.scheduler.demo.DemoTask">-->
-        <!--<property name="scheduleTaskConfig" ref="scheduleTaskConfig"/>-->
-    <!--</bean>-->
-
-
-
+    <!--<task:scheduled-tasks scheduler="schedulerTaskThreadPool">-->
+        <!--<task:scheduled ref="demoScheduleJobDispatcher" method="run" fixed-rate="60000"/>-->
+    <!--</task:scheduled-tasks>-->
 
 
 </beans>
