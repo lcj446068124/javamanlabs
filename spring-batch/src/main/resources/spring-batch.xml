@@ -90,7 +90,7 @@
 
     <batch:step id="abstractStep" abstract="true" job-repository="jobRepository">
         <batch:tasklet transaction-manager="transactionManager" allow-start-if-complete="true">
-            <batch:chunk commit-interval="10" skip-limit="10">
+            <batch:chunk commit-interval="2" skip-limit="10">
                 <batch:skippable-exception-classes>
                     <batch:include class="java.lang.Exception"/>
                 </batch:skippable-exception-classes>
@@ -109,7 +109,7 @@
                 <batch:chunk writer="jsonItemWriter" processor="jsonConvertProcessor">
                     <batch:reader>
                         <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
-                            <property name="pageSize" value="1000"/>
+                            <property name="pageSize" value="2"/>
                             <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
                             <property name="queryId" value="sun.batch.tutorial.entity.Person.list"/>
                         </bean>
