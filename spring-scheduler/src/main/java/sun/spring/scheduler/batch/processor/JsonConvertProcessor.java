@@ -18,8 +18,6 @@ public class JsonConvertProcessor implements ItemProcessor<Object, Tuple<String,
         assert jsonConvert != null;
 
         String json = jsonConvert.convert(item);
-        System.out.println("processor "+json);
-//        Thread.sleep(1000);
         return new Tuple<>(json, item);
     }
 
