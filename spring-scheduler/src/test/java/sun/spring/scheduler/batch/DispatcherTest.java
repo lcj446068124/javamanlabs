@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import sun.spring.scheduler.core.DBType;
 import sun.spring.scheduler.core.ScheduleJobDispatcher;
 
 import javax.annotation.Resource;
@@ -43,7 +44,7 @@ public class DispatcherTest {
 
     @Test
     public void testBatchJob() throws Exception {
-        new JobCleaner(jdbcTemplate).cleanBeforeJobLaunch(job.getName());
+        new JobCleaner(jdbcTemplate,DBType.MYSQL).cleanBeforeJobLaunch(job.getName());
         Map<String, JobParameter> parameterMap = new HashMap<>();
         parameterMap.put("_age", new JobParameter(30L, false));
         JobExecution jobExecution = jobLauncher.run(job, new JobParameters(parameterMap));
@@ -62,6 +63,6 @@ public class DispatcherTest {
 
     @Test
     public void testClean(){
-        new JobCleaner(jdbcTemplate).cleanBeforeJobLaunch(job.getName());
+        new JobCleaner(jdbcTemplate, DBType.MYSQL).cleanBeforeJobLaunch(job.getName());
     }
 }

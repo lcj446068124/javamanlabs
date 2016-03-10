@@ -1,7 +1,9 @@
 package sun.spring.scheduler.batch;
 
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import sun.spring.scheduler.core.DBType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,13 +20,13 @@ public class JobCleaner {
 
     private static final String FIND_STEP_EXECUTION_ID_SQL = "select step_execution_id from batch_step_execution where job_execution_id=?";
 
-    private static final String DEL_STEP_EXECUTION_SEQ_SQL = "delete from batch_step_execution_seq where id=?";
+    private static final String DEL_STEP_EXECUTION_SEQ_SQL_MYSQL = "delete from batch_step_execution_seq where id=?";
 
     private static final String DEL_STEP_EXECUTION_CONTEXT_SQL = "delete from batch_step_execution_context where step_execution_id=?";
 
     private static final String DEL_STEP_EXECUTION_SQL = "delete from batch_step_execution where job_execution_id=?";
 
-    private static final String DEL_JOB_EXECUTION_SEQ_SQL = "delete from batch_job_execution_seq where id=?";
+    private static final String DEL_JOB_EXECUTION_SEQ_SQL_MYSQL = "delete from batch_job_execution_seq where id=?";
 
     private static final String DEL_JOB_EXECUTION_PARAMS_SQL = "delete from batch_job_execution_params where job_execution_id=?";
 
@@ -34,12 +36,29 @@ public class JobCleaner {
 
     private static final String DEL_JOB_INSTANCE_SQL = "delete from batch_job_instance where job_instance_id=?";
 
-//    private static final String DEL_SQL_SQL = "delete from batch_job_instance where job_instance_id=?";
+    private static final String DEL_JOB_SEQ_SQL_MYSQL = "delete from batch_job_seq where id=?";
+
+    // fix sql
+
+    private static final String INIT_STEP_EXECUTION_SEQ_SQL_MYSQL = "INSERT INTO BATCH_STEP_EXECUTION_SEQ values(?,0)";
+
+    private static final String INIT_JOB_EXECUTION_SEQ_SQL_MYSQL = "INSERT INTO BATCH_JOB_EXECUTION_SEQ values(?,0)";
+
+    private static final String INIT_JOB_SEQ_SQL_MYSQL = "INSERT INTO BATCH_JOB_SEQ values(?,0)";
+
+    private static final String DEL_INIT_STEP_EXECUTION_SEQ_SQL_MYSQL = "DELETE FROM BATCH_STEP_EXECUTION_SEQ WHERE ID=0";
+
+    private static final String DEL_INIT_JOB_EXECUTION_SEQ_SQL_MYSQL = "DELETE FROM BATCH_JOB_EXECUTION_SEQ WHERE ID=0";
+
+    private static final String DEL_INIT_JOB_SEQ_SQL_MYSQL = "DELETE FROM BATCH_JOB_SEQ WHERE ID=0";
 
     private JdbcTemplate jdbcTemplate;
 
-    public JobCleaner(JdbcTemplate jdbcTemplate) {
+    private DBType dbType;    // MySQL, Oracle
+
+    public JobCleaner(JdbcTemplate jdbcTemplate, DBType dbType) {
         this.jdbcTemplate = jdbcTemplate;
+        this.dbType = dbType;
     }
 
     public final void cleanBeforeJobLaunch(String jobName) {
@@ -49,20 +68,44 @@ public class JobCleaner {
                 Long jobExecutionId = findJobExecutionId(jobInstanceId);
                 if (jobExecutionId != null) {
                     List<Long> stepExecutions = findStepExecutionId(jobExecutionId);
-                    if(stepExecutions!=null && stepExecutions.size()>0){
+                    if (stepExecutions != null && stepExecutions.size() > 0) {
                         for (Long stepExecutionId : stepExecutions) {
-                            delete(DEL_STEP_EXECUTION_SEQ_SQL, stepExecutionId);
+                            if (dbType == DBType.MYSQL ) {
+                                delete(DEL_STEP_EXECUTION_SEQ_SQL_MYSQL, stepExecutionId);
+                            }
                             delete(DEL_STEP_EXECUTION_CONTEXT_SQL, stepExecutionId);
                         }
                     }
-
                     delete(DEL_STEP_EXECUTION_SQL, jobExecutionId);
-                    delete(DEL_JOB_EXECUTION_SEQ_SQL, jobExecutionId);
+                    if (dbType == DBType.MYSQL) {
+                        delete(DEL_JOB_EXECUTION_SEQ_SQL_MYSQL, jobExecutionId);
+                    }
                     delete(DEL_JOB_EXECUTION_PARAMS_SQL, jobExecutionId);
                     delete(DEL_JOB_EXECUTION_CONTEXT_SQL, jobExecutionId);
                 }
                 delete(DEL_JOB_EXECUTION_SQL, jobInstanceId);
                 delete(DEL_JOB_INSTANCE_SQL, jobInstanceId);
+                if (dbType == DBType.MYSQL) {
+                    delete(DEL_JOB_SEQ_SQL_MYSQL, jobInstanceId);
+                }
+//                // init seq to fix  Exception: Duplicate entry '0' for key 'PRIMARY' when insert value to BATCH_JOB_INSTANCE
+                if (dbType == DBType.MYSQL) {
+                    jdbcTemplate.update(INIT_STEP_EXECUTION_SEQ_SQL_MYSQL, jobInstanceId);
+                    jdbcTemplate.update(INIT_JOB_EXECUTION_SEQ_SQL_MYSQL, jobInstanceId);
+                    jdbcTemplate.update(INIT_JOB_SEQ_SQL_MYSQL, jobInstanceId);
+                }
+            }
+        }else{
+            // init seq to fix  Exception: Duplicate entry '0' for key 'PRIMARY' when insert value to BATCH_JOB_INSTANCE
+            if (dbType == DBType.MYSQL) {
+                //delete
+                jdbcTemplate.execute(DEL_INIT_STEP_EXECUTION_SEQ_SQL_MYSQL);
+                jdbcTemplate.execute(DEL_INIT_JOB_EXECUTION_SEQ_SQL_MYSQL);
+                jdbcTemplate.execute(DEL_INIT_JOB_SEQ_SQL_MYSQL);
+                // insert
+                jdbcTemplate.update(INIT_STEP_EXECUTION_SEQ_SQL_MYSQL, 0);
+                jdbcTemplate.update(INIT_JOB_EXECUTION_SEQ_SQL_MYSQL, 0);
+                jdbcTemplate.update(INIT_JOB_SEQ_SQL_MYSQL, 0);
             }
         }
     }

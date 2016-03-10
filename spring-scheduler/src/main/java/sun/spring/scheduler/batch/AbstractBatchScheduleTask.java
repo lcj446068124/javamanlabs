@@ -3,6 +3,7 @@ package sun.spring.scheduler.batch;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.jdbc.core.JdbcTemplate;
+import sun.spring.scheduler.core.DBType;
 import sun.spring.scheduler.core.ScheduleTaskContext;
 import sun.spring.scheduler.core.ScheduleTaskDetail;
 
@@ -32,7 +33,7 @@ public abstract class AbstractBatchScheduleTask implements ScheduleTaskDetail{
     @Override
     public void doTask(ScheduleTaskContext scheduleTaskContext) {
         // clean job log
-        new JobCleaner(jdbcTemplate).cleanBeforeJobLaunch(job.getName());
+        new JobCleaner(jdbcTemplate, DBType.MYSQL).cleanBeforeJobLaunch(job.getName());
 
         doBatchTask(scheduleTaskContext);
     }

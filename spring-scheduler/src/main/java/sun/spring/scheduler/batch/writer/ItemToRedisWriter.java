@@ -8,10 +8,12 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 import sun.spring.scheduler.batch.processor.RedisKeyBuilder;
 import sun.spring.scheduler.batch.processor.Tuple;
 
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,23 +40,24 @@ public class ItemToRedisWriter implements ItemWriter<Tuple<String, Object>> {
 
         for (Tuple<String, Object> tuple : items) {
             String json = tuple.getKey();
-            System.out.println("writer==="+json);
-//            Object value = tuple.getValue();
-//            String key = redisKeyBuilder.build(value);
-//            list.add(new Tuple<>(key, json));
+            Object value = tuple.getValue();
+            String key = redisKeyBuilder.build(value);
+            list.add(new Tuple<>(key, json));
         }
 
         // Use Pipeline
-//        redisTemplate.execute(new RedisCallback<Void>() {
-//            @Override
-//            public Void doInRedis(RedisConnection connection) throws DataAccessException {
-//                StringRedisConnection stringRedisConnection = (StringRedisConnection)connection;
-//                for(Tuple<String,String> tuple : list){
-//                    stringRedisConnection.set(tuple.getKey(), tuple.getValue());
-//                }
-//                return null;
-//            }
-//        }, false, true);
+        redisTemplate.execute(new RedisCallback<Void>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Void doInRedis(RedisConnection connection) throws DataAccessException {
+                for(Tuple<String,String> tuple : list){
+                    RedisSerializer valueSerializer = redisTemplate.getValueSerializer();
+                    RedisSerializer keySerializer = redisTemplate.getKeySerializer();
+                    connection.set(keySerializer.serialize(tuple.getKey()), valueSerializer.serialize(tuple.getValue()));
+                }
+                return null;
+            }
+        }, false, true);
 
     }
 }

@@ -5,6 +5,6 @@ package sun.spring.scheduler.batch.processor;
  */
 public interface RedisKeyBuilder {
 
-    String build(Object object);
+    String build(Object item);
 
 }

@@ -87,7 +87,9 @@
 
     <bean id="jsonItemWriter" class="sun.spring.scheduler.batch.writer.ItemToRedisWriter">
         <property name="redisTemplate" ref="redisTemplate"/>
+        <property name="redisKeyBuilder" ref="demoItemKeyBuilder"/>
     </bean>
+
 
     <bean id="jsonConvertProcessor" class="sun.spring.scheduler.batch.processor.JsonConvertProcessor">
         <property name="jsonConvert" ref="itemJsonConvert"/>
@@ -136,5 +138,6 @@
         </batch:split>
     </batch:job>
 
+    <bean id="demoItemKeyBuilder" class="sun.spring.scheduler.demo.DemoRedisKeyBuilder"/>
 
 </beans>
