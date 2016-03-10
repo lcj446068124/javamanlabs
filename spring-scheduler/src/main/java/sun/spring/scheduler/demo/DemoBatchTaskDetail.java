@@ -7,37 +7,33 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import sun.spring.scheduler.batch.AbstractBatchScheduleTask;
+import sun.spring.scheduler.core.DBType;
 import sun.spring.scheduler.core.ScheduleTaskContext;
+
+import java.util.Map;
 
 /**
  * Created by root on 2016/3/9.
  */
 public class DemoBatchTaskDetail extends AbstractBatchScheduleTask {
+
     @Override
-    public void doBatchTask(ScheduleTaskContext scheduleTaskContext) {
-        JobExecution jobExecution = null;
-        try {
-            jobExecution = jobLauncher.run(job, new JobParameters());
-            while (!"COMPLETED".equals(jobExecution.getExitStatus().getExitCode())) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
-        } catch (JobRestartException e) {
-            e.printStackTrace();
-        } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
-        } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
-        }
+    public boolean preCondition() throws Exception {
+        return true;
     }
 
     @Override
-    public boolean precondition() throws Exception {
-        return true;
+    public void setJobParameters(JobParameters jobParameters) {
+
+    }
+
+    @Override
+    public JobParameters getJobParameters() {
+        return null;
+    }
+
+    @Override
+    public DBType getDBType() {
+        return DBType.MYSQL;
     }
 }

@@ -1,6 +1,7 @@
 package sun.spring.scheduler.core;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by root on 2016/3/9.
@@ -14,6 +15,8 @@ public class ScheduleJobContext {
     private String jobClassName;
     private int lock = EntranceGuard.RELEASE.getStatus();;
     private String scheduleName;
+
+    private Map<String,Object> jobRetVal;
 
     private ScheduleJobConfig scheduleJobConfig;
 
@@ -87,5 +90,13 @@ public class ScheduleJobContext {
 
     public void setScheduleJobConfig(ScheduleJobConfig scheduleJobConfig) {
         this.scheduleJobConfig = scheduleJobConfig;
+    }
+
+    public Map<String, Object> getJobRetVal() {
+        return jobRetVal;
+    }
+
+    public void setJobRetVal(Map<String, Object> jobRetVal) {
+        this.jobRetVal = jobRetVal;
     }
 }

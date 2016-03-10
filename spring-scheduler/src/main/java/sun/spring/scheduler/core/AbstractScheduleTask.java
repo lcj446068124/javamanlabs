@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import sun.spring.scheduler.domain.TaskEntity;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by root on 2016/3/9.
@@ -57,14 +58,15 @@ public abstract class AbstractScheduleTask implements ScheduleTask {
     public abstract void setScheduleTaskDetail(ScheduleTaskDetail scheduleTaskDetail);
 
     @Override
-    public void run() {
+    public Map<String, Object> call() {
 
         boolean result = false;
         try {
-            result = scheduleTaskDetail.precondition();
+            result = scheduleTaskDetail.preCondition();
         } catch (Exception e) {
             // ignore
         }
+        Map<String, Object> retVal = null;
 
         if (result) {
             if (tryLock()) {
@@ -73,14 +75,14 @@ public abstract class AbstractScheduleTask implements ScheduleTask {
 
                 boolean hasException = false;
                 try {
-                    scheduleTaskDetail.doTask(scheduleTaskContext);
+                    retVal = scheduleTaskDetail.doTask(scheduleTaskContext);
                 } catch (Exception e) {
                     hasException = true;
                     logger.error(e.getMessage());
                 } finally {
                     if (hasException) {
                         scheduleTaskContext.setStatus(TaskStatus.FAILED);
-                    }else{
+                    } else {
                         scheduleTaskContext.setStatus(TaskStatus.COMPLETED);
                     }
                     afterTask();
@@ -89,6 +91,7 @@ public abstract class AbstractScheduleTask implements ScheduleTask {
                 }
             }
         }
+        return retVal;
     }
 
     @Override

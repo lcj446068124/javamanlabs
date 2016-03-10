@@ -1,12 +1,14 @@
 package sun.spring.scheduler.core;
 
+import java.util.Map;
+
 /**
  * Created by root on 2016/3/9.
  */
 public interface ScheduleTaskDetail {
 
-    boolean precondition() throws Exception;
+    boolean preCondition() throws Exception;
 
-    void doTask(ScheduleTaskContext scheduleTaskContext);
+    Map<String, Object> doTask(ScheduleTaskContext scheduleTaskContext);
 
 }

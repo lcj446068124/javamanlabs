@@ -12,9 +12,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import sun.spring.scheduler.domain.JobEntity;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,6 +36,8 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
 
     private ThreadPoolTaskScheduler executorService;
 
+    private ScheduleJobListener scheduleJobListener;
+
     public AbstractScheduleJobDispatcher() {
         scheduleJobContext = new ScheduleJobContext();
     }
@@ -47,6 +49,10 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
             return;
 
         beforeJob();
+        if(scheduleJobListener!=null){
+            scheduleJobListener.beforeJob(scheduleJobContext);
+        }
+        Map<String, Object> retVal = new HashMap<>();
 
         boolean hasException = false;
         try {
@@ -54,13 +60,24 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
             if (scheduleTasks.size() == 1) {
                 ScheduleTask scheduleTask = scheduleTasks.get(0);
                 scheduleTask.setScheduleJobContext(scheduleJobContext);
-                scheduleTask.run();
+                retVal = scheduleTask.call();
             } else {
+                Stack<Future<Map<String,Object>>> stack = new Stack<>();
                 for (ScheduleTask scheduleTask : scheduleTasks) {
                     scheduleTask.setScheduleJobContext(scheduleJobContext);
-                    this.executorService.submit(scheduleTask);
+                    Future<Map<String,Object>> future = this.executorService.submit(scheduleTask);
+                    stack.push(future);
+                }
+                // wait for all tasks completed
+                while (!stack.isEmpty()) {
+                    Map<String,Object> taskRetVal = stack.pop().get(); // get() will block thread
+                    if (taskRetVal != null) {
+                        retVal.putAll(taskRetVal);
+                    }
                 }
             }
+            // add all task result to job context;
+            scheduleJobContext.setJobRetVal(retVal);
         } catch (Exception e) {
             hasException = true;
             logger.error(e.getMessage());
@@ -73,6 +90,10 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
             afterJob();
 
             release();
+
+            if(scheduleJobListener!=null){
+                scheduleJobListener.afterJob(scheduleJobContext);
+            }
         }
     }
 
@@ -210,5 +231,10 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
 
     public void setExecutorService(ThreadPoolTaskScheduler executorService) {
         this.executorService = executorService;
+    }
+
+    @Override
+    public void setScheduleJobListener(ScheduleJobListener scheduleJobListener) {
+        this.scheduleJobListener = scheduleJobListener;
     }
 }

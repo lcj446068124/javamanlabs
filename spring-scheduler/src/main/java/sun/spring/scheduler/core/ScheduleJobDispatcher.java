@@ -12,4 +12,6 @@ public interface ScheduleJobDispatcher extends Runnable {
     void setScheduleTasks(List<ScheduleTask> scheduleTasks);
 
     void afterJob();
+
+    void setScheduleJobListener(ScheduleJobListener scheduleJobListener);
 }
