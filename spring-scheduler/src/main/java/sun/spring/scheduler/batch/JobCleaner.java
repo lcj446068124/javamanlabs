@@ -34,6 +34,8 @@ public class JobCleaner {
 
     private static final String DEL_JOB_INSTANCE_SQL = "delete from batch_job_instance where job_instance_id=?";
 
+//    private static final String DEL_SQL_SQL = "delete from batch_job_instance where job_instance_id=?";
+
     private JdbcTemplate jdbcTemplate;
 
     public JobCleaner(JdbcTemplate jdbcTemplate) {

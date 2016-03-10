@@ -2,10 +2,7 @@ package sun.spring.scheduler.batch;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -17,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import sun.spring.scheduler.core.ScheduleJobDispatcher;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by root on 2016/3/7.
@@ -45,8 +44,9 @@ public class DispatcherTest {
     @Test
     public void testBatchJob() throws Exception {
         new JobCleaner(jdbcTemplate).cleanBeforeJobLaunch(job.getName());
-        JobExecution jobExecution = null;
-        jobExecution = jobLauncher.run(job, new JobParameters());
+        Map<String, JobParameter> parameterMap = new HashMap<>();
+        parameterMap.put("_age", new JobParameter(30L, false));
+        JobExecution jobExecution = jobLauncher.run(job, new JobParameters(parameterMap));
         String exitCode = jobExecution.getExitStatus().getExitCode();
         while (jobExecution.isRunning()) {
             System.out.println("================" + exitCode);
@@ -58,5 +58,10 @@ public class DispatcherTest {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Test
+    public void testClean(){
+        new JobCleaner(jdbcTemplate).cleanBeforeJobLaunch(job.getName());
     }
 }

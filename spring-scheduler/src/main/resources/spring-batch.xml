@@ -118,10 +118,15 @@
                     <batch:tasklet>
                         <batch:chunk writer="jsonItemWriter" processor="jsonConvertProcessor">
                             <batch:reader>
-                                <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader">
+                                <bean class="org.mybatis.spring.batch.MyBatisPagingItemReader" scope="step">
                                     <property name="pageSize" value="10"/>
                                     <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
                                     <property name="queryId" value="sun.spring.scheduler.demo.Person.list"/>
+                                    <property name="parameterValues">
+                                        <map>
+                                            <entry key="_age" value="#{jobParameters['_age']}"/>
+                                        </map>
+                                    </property>
                                 </bean>
                             </batch:reader>
                         </batch:chunk>

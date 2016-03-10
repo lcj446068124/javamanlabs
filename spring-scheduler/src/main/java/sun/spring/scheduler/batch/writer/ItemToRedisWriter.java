@@ -38,22 +38,23 @@ public class ItemToRedisWriter implements ItemWriter<Tuple<String, Object>> {
 
         for (Tuple<String, Object> tuple : items) {
             String json = tuple.getKey();
-            Object value = tuple.getValue();
-            String key = redisKeyBuilder.build(value);
-            list.add(new Tuple<>(key, json));
+            System.out.println("writer==="+json);
+//            Object value = tuple.getValue();
+//            String key = redisKeyBuilder.build(value);
+//            list.add(new Tuple<>(key, json));
         }
 
         // Use Pipeline
-        redisTemplate.execute(new RedisCallback<Void>() {
-            @Override
-            public Void doInRedis(RedisConnection connection) throws DataAccessException {
-                StringRedisConnection stringRedisConnection = (StringRedisConnection)connection;
-                for(Tuple<String,String> tuple : list){
-                    stringRedisConnection.set(tuple.getKey(), tuple.getValue());
-                }
-                return null;
-            }
-        }, false, true);
+//        redisTemplate.execute(new RedisCallback<Void>() {
+//            @Override
+//            public Void doInRedis(RedisConnection connection) throws DataAccessException {
+//                StringRedisConnection stringRedisConnection = (StringRedisConnection)connection;
+//                for(Tuple<String,String> tuple : list){
+//                    stringRedisConnection.set(tuple.getKey(), tuple.getValue());
+//                }
+//                return null;
+//            }
+//        }, false, true);
 
     }
 }
