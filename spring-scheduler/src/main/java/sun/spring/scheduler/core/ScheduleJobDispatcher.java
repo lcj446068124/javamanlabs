@@ -9,9 +9,9 @@ public interface ScheduleJobDispatcher extends Runnable {
 
     void beforeJob();
 
+    void afterJob(boolean hasException);
+
     void setScheduleTasks(List<ScheduleTask> scheduleTasks);
 
-    void afterJob();
-
-    void setScheduleJobListener(ScheduleJobListener scheduleJobListener);
+    void setJobListener(JobListener jobListener);
 }

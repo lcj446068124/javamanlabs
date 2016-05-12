@@ -3,7 +3,7 @@ package sun.spring.scheduler.core;
 /**
  * Created by sunyamorn on 3/6/16.
  */
-public enum JobStatus {
+public enum ScheduleStatus {
     WAIT("WAIT"),
     RUNNING("RUNNING"),
     COMPLETED("COMPLETED"),
@@ -11,7 +11,7 @@ public enum JobStatus {
 
     String status;
 
-    JobStatus(String status) {
+    ScheduleStatus(String status) {
         this.status = status;
     }
 

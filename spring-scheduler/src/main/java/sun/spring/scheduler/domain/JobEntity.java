@@ -6,38 +6,17 @@ import java.util.Date;
  * Created by sunyamorn on 3/6/16.
  */
 public class JobEntity {
-    private Date startTime;
-    private Date endTime;
-    private String status;
+
     private String jobName;
     private String jobGroup;
+    private String jobStatus;
+    private int jobLock;
+    private int runFlag;
     private String jobClassName;
-    private int lock;
     private String scheduleName;
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    private Date lastStartTime;
+    private Date lastEndTime;
+    private Exception exception;
 
     public String getJobName() {
         return jobName;
@@ -55,6 +34,30 @@ public class JobEntity {
         this.jobGroup = jobGroup;
     }
 
+    public String getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(String jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    public int getJobLock() {
+        return jobLock;
+    }
+
+    public void setJobLock(int jobLock) {
+        this.jobLock = jobLock;
+    }
+
+    public int getRunFlag() {
+        return runFlag;
+    }
+
+    public void setRunFlag(int runFlag) {
+        this.runFlag = runFlag;
+    }
+
     public String getJobClassName() {
         return jobClassName;
     }
@@ -63,19 +66,35 @@ public class JobEntity {
         this.jobClassName = jobClassName;
     }
 
-    public int getLock() {
-        return lock;
-    }
-
-    public void setLock(int lock) {
-        this.lock = lock;
-    }
-
     public String getScheduleName() {
         return scheduleName;
     }
 
     public void setScheduleName(String scheduleName) {
         this.scheduleName = scheduleName;
+    }
+
+    public Date getLastStartTime() {
+        return lastStartTime;
+    }
+
+    public void setLastStartTime(Date lastStartTime) {
+        this.lastStartTime = lastStartTime;
+    }
+
+    public Date getLastEndTime() {
+        return lastEndTime;
+    }
+
+    public void setLastEndTime(Date lastEndTime) {
+        this.lastEndTime = lastEndTime;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+
+    public void setException(Exception exception) {
+        this.exception = exception;
     }
 }

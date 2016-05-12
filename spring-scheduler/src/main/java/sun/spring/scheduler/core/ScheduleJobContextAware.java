@@ -5,6 +5,6 @@ package sun.spring.scheduler.core;
  */
 public interface ScheduleJobContextAware {
 
-    void setScheduleJobContext(ScheduleJobContext scheduleJobContext);
+    void setJobContext(JobContext jobContext);
 
 }
