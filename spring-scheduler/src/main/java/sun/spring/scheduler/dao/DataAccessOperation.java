@@ -22,6 +22,10 @@ public interface DataAccessOperation<T, V> {
 
     boolean pessimisticLockQuery(final V id, OperationCallback<T, Boolean> callback);
 
+    boolean releaseJobLock(V id);
+
+    boolean hangup(V id, int flag);
+
     void log(T entity);
 
 

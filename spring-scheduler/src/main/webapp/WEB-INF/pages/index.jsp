@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,7 +28,8 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -80,67 +82,85 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Header</th>
-                        <th>Header</th>
-                        <th>Header</th>
-                        <th>Header</th>
+                        <th>任务名称</th>
+                        <th>任务状态</th>
+                        <th>是否锁定</th>
+                        <th>任务控制</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>作业耗时</th>
+                        <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach items="${requestScope.list}" var="entity">
                         <tr>
                             <td>${entity.jobName}</td>
-                            <td>${entity.jobStatus}</td>
-                            <td>${entity.jobLock}</td>
-                            <td>dolor</td>
-                            <td>sit</td>
+                            <td class="status_td">
+                                <c:choose>
+                                    <c:when test="${entity.jobStatus == 'WAIT'}">
+                                        等待
+                                    </c:when>
+                                    <c:when test="${entity.jobStatus == 'COMPLETED'}">
+                                        完成
+                                    </c:when>
+                                    <c:when test="${entity.jobStatus == 'RUNNING'}">
+                                        运行
+                                    </c:when>
+                                    <c:otherwise>
+                                        异常
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="lock_td">
+                                <c:choose>
+                                    <c:when test="${entity.jobLock == 1}">
+                                        释放
+                                    </c:when>
+                                    <c:otherwise>
+                                        锁定
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="hangup_td">
+                                <c:choose>
+                                    <c:when test="${entity.runFlag == 0}">
+                                        正常
+                                    </c:when>
+                                    <c:otherwise>
+                                        挂起
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${entity.lastStartTime}"/>
+                            </td>
+                            <td>
+                                <fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${entity.lastEndTime}"/>
+                            </td>
+                            <td>
+                                    ${entity.lastEndTime.getTime() - entity.lastStartTime.getTime()}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-xs" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-primary release" data-id="${entity.jobName}">
+                                        解锁
+                                    </button>
+                                    <button type="button" class="btn btn-default hangup" data-flag="${entity.runFlag}"
+                                            data-id="${entity.jobName}">
+                                        <c:choose>
+                                            <c:when test="${entity.runFlag == 0}">
+                                                挂起
+                                            </c:when>
+                                            <c:otherwise>
+                                                恢复
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     </c:forEach>
-
-                    <tr>
-                        <td>1,002</td>
-                        <td>amet</td>
-                        <td>consectetur</td>
-                        <td>adipiscing</td>
-                        <td>elit</td>
-                    </tr>
-                    <tr>
-                        <td>1,003</td>
-                        <td>Integer</td>
-                        <td>nec</td>
-                        <td>odio</td>
-                        <td>Praesent</td>
-                    </tr>
-                    <tr>
-                        <td>1,003</td>
-                        <td>libero</td>
-                        <td>Sed</td>
-                        <td>cursus</td>
-                        <td>ante</td>
-                    </tr>
-                    <tr>
-                        <td>1,004</td>
-                        <td>dapibus</td>
-                        <td>diam</td>
-                        <td>Sed</td>
-                        <td>nisi</td>
-                    </tr>
-                    <tr>
-                        <td>1,005</td>
-                        <td>Nulla</td>
-                        <td>quis</td>
-                        <td>sem</td>
-                        <td>at</td>
-                    </tr>
-
-                    <tr>
-                        <td>1,015</td>
-                        <td>sodales</td>
-                        <td>ligula</td>
-                        <td>in</td>
-                        <td>libero</td>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -148,5 +168,56 @@
     </div>
 </div>
 
+<script>
+    $(function () {
+        function getBtOpCeil(bt, selector) {
+            var td = $(bt).parents('td').get(0);
+            return $(td).siblings('td[class="' + selector + '"]');
+        }
+
+        $('.btn.release').click(function () {
+            var id = $(this).attr('data-id');
+            var p = $(this).parents('td').get(0);
+            var lockCeil = getBtOpCeil(this, 'lock_td');
+            var statusCeil = getBtOpCeil(this, 'status_td');
+            $.ajax({
+                type: 'post',
+                url: '<c:url value="/release"/>',
+                data: {'id': id},
+                success: function (data) {
+                    lockCeil.html('等待');
+                    statusCeil.html('释放')
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        });
+
+        $('.btn.hangup').click(function () {
+            var flag = $(this).attr('data-flag');
+            flag = parseInt(flag);
+            var id = $(this).attr('data-id');
+            if (!flag) {
+                $(this).attr('data-flag', 1).html('恢复');
+            } else {
+                $(this).attr('data-flag', 0).html('挂起');
+            }
+            var hangupCeil = getBtOpCeil(this, 'hangup_td');
+            $.ajax({
+                type: 'post',
+                url: '<c:url value="/hangup"/>',
+                data: {'id': id, 'flag': !flag ? 1 : 0},
+                success: function (data) {
+                    console.log(data);
+                    hangupCeil.html(flag ? '正常' : '挂起')
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        });
+    })
+</script>
 </body>
 </html>

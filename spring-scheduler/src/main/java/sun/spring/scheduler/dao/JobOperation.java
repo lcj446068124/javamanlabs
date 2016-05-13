@@ -7,6 +7,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import sun.spring.scheduler.core.EntranceGuard;
+import sun.spring.scheduler.core.JobRunFlag;
 import sun.spring.scheduler.core.ScheduleStatus;
 import sun.spring.scheduler.domain.JobEntity;
 
@@ -47,6 +48,7 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
         try {
             return jdbcTemplate.queryForObject(sql, new RowMapper<JobEntity>() {
                 JobEntity entity = new JobEntity();
+
                 @Override
                 public JobEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
                     entity.setJobName(rs.getString(controlFields[0]));
@@ -71,7 +73,7 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
         String sql = String.format("SELECT * FROM %s", tableName());
         List<Map<String, Object>> results = jdbcTemplate.queryForList(sql);
         List<JobEntity> list = new ArrayList<>();
-        for(Map<String, Object> map : results){
+        for (Map<String, Object> map : results) {
             JobEntity entity = new JobEntity();
             entity.setJobName(convert(map.get(controlFields[0]), String.class));
             entity.setJobStatus(convert(map.get(controlFields[1]), String.class));
@@ -89,7 +91,7 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
 
     @SuppressWarnings("unchecked")
     private <T> T convert(Object value, Class<T> type) {
-        return value != null ? (T)value: null;
+        return value != null ? (T) value : null;
     }
 
     @Override
@@ -138,6 +140,22 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
                 return result;
             }
         });
+    }
+
+    @Override
+    public boolean releaseJobLock(String id) {
+        String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?",
+                tableName(), controlFields[2], controlFields[1], controlFields[0]);
+        return updateWithinTransaction(sql,
+                new Object[]{EntranceGuard.RELEASE.getStatus(), ScheduleStatus.WAIT.getStatus(), id});
+    }
+
+    @Override
+    public boolean hangup(String id, int flag) {
+        String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?",
+                tableName(), controlFields[3], controlFields[0]);
+        return updateWithinTransaction(sql,
+                new Object[]{(flag == 0 ? JobRunFlag.RUNNING.getValue() : JobRunFlag.HANGUP.getValue()), id});
     }
 
     @Override
