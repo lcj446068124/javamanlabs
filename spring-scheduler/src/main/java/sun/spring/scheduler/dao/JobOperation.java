@@ -1,5 +1,7 @@
 package sun.spring.scheduler.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -8,6 +10,8 @@ import sun.spring.scheduler.core.EntranceGuard;
 import sun.spring.scheduler.core.ScheduleStatus;
 import sun.spring.scheduler.domain.JobEntity;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
@@ -37,7 +41,26 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
     public JobEntity query(String id, boolean lock) {
         String sql = String.format("SELECT %s FROM %s WHERE %s = ? " + (lock ? "FOR UPDATE" : ""),
                 arrayJoin(controlFields), tableName(), controlFields[0]);
-        return jdbcTemplate.queryForObject(sql, JobEntity.class);
+        try {
+            return jdbcTemplate.queryForObject(sql, new RowMapper<JobEntity>() {
+                JobEntity entity = new JobEntity();
+                @Override
+                public JobEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    entity.setJobName(rs.getString(controlFields[0]));
+                    entity.setJobStatus(rs.getString(controlFields[1]));
+                    entity.setJobLock(rs.getInt(controlFields[2]));
+                    entity.setRunFlag(rs.getInt(controlFields[3]));
+                    entity.setJobGroup(rs.getString(controlFields[4]));
+                    entity.setJobClassName(rs.getString(controlFields[5]));
+                    entity.setScheduleName(rs.getString(controlFields[6]));
+                    entity.setLastStartTime(rs.getDate(controlFields[7]));
+                    entity.setLastEndTime(rs.getDate(controlFields[8]));
+                    return entity;
+                }
+            }, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -55,7 +78,7 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
         final String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?",
                 tableName(), controlFields[2], timeField, controlFields[0]);
 
-        return updateWithinTransaction(sql, new Object[]{lockStatus, new Date(), id});
+        return updateWithinTransaction(sql, new Object[]{lockStatus.getStatus(), new Date(), id});
     }
 
     @Override
@@ -63,7 +86,7 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
         String timeField = scheduleStatus == ScheduleStatus.RUNNING ? controlFields[7] : controlFields[8];
         String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?",
                 tableName(), controlFields[1], timeField, controlFields[0]);
-        return jdbcTemplate.update(sql, scheduleStatus, new Date(), id) == 1;
+        return jdbcTemplate.update(sql, scheduleStatus.getStatus(), new Date(), id) == 1;
     }
 
     @Override

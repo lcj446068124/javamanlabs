@@ -16,16 +16,17 @@
 
     <bean id="configService" class="sun.spring.scheduler.service.ConfigService">
         <property name="dataAccessOperation" ref="dataAccessOperation"/>
-        <property name="executorService" ref="schedulerTaskThreadPool"/>
+        <property name="executorService" ref="jobDispatcherThreadPool"/>
     </bean>
 
 
 
-    <bean id="demoScheduleJobDispatcher" class="sun.spring.scheduler.core.DefaultScheduleJobDispatcher">
+    <bean id="demoScheduleJobDispatcher" class="sun.spring.scheduler.core.DefaultScheduleJobDispatcher" depends-on="configService">
         <property name="scheduleTasks">
             <list>
-                <!--<ref bean="demoScheduleTask"/>-->
-                <ref bean="demoBatchScheduleTask"/>
+                <ref bean="demoScheduleTask"/>
+                <ref bean="demoScheduleTask2"/>
+                <!--<ref bean="demoBatchScheduleTask"/>-->
             </list>
         </property>
     </bean>
@@ -37,12 +38,13 @@
     <!--<bean id="demoTaskDetail" class="sun.spring.scheduler.demo.DemoTaskDetail"/>-->
 
 
-    <bean id="demoBatchScheduleTask" class="sun.spring.scheduler.demo.DemoScheduleTask"/>
+    <bean id="demoScheduleTask" class="sun.spring.scheduler.demo.DemoScheduleTask"/>
+    <bean id="demoScheduleTask2" class="sun.spring.scheduler.demo.DemoScheduleTask2"/>
 
      <!--Schedule tasks-->
-    <!--<task:scheduled-tasks scheduler="schedulerTaskThreadPool">-->
-        <!--<task:scheduled ref="demoScheduleJobDispatcher" method="run" fixed-rate="60000"/>-->
-    <!--</task:scheduled-tasks>-->
+    <task:scheduled-tasks scheduler="schedulerTaskThreadPool">
+        <task:scheduled ref="demoScheduleJobDispatcher" method="run" fixed-rate="10000"/>
+    </task:scheduled-tasks>
 
 
 </beans>

@@ -155,13 +155,13 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
     @SuppressWarnings("unchecked")
     @Override
     public void afterPropertiesSet() throws Exception {
-        assert (dataAccessOperation != null);
-        assert scheduleTasks != null && scheduleTasks.size() > 0;
-
         // This attribute depends on ConfigService class
         Services services = Provider.getInstance().get(Constant.CONFIG_SERVICE_KEY);
         executorService = services.getThreadPoolTaskScheduler();
         dataAccessOperation = services.getDataAccessOperation();
+
+        assert (dataAccessOperation != null);
+        assert scheduleTasks != null && scheduleTasks.size() > 0;
 
         // init
         JobEntity entity = dataAccessOperation.query(jobName, false);
@@ -170,7 +170,7 @@ public abstract class AbstractScheduleJobDispatcher implements ScheduleJobDispat
                 .setJobGroup(Thread.currentThread().getThreadGroup().getName())
                 .setJobClassName(this.getClass().getName())
                 .setJobLock(EntranceGuard.RELEASE.getStatus())
-                .setScheduleName("");
+                .setScheduleName(executorService.getClass().getName());
 
         if (entity == null) {
             // persist job
