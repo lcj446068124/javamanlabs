@@ -3,12 +3,16 @@ package sun.spring.scheduler.dao;
 import sun.spring.scheduler.core.EntranceGuard;
 import sun.spring.scheduler.core.ScheduleStatus;
 
+import java.util.List;
+
 /**
  * Created by yamorn on 2016/5/12.
  */
 public interface DataAccessOperation<T, V> {
 
     T query(V id, boolean lock);
+
+    List<T> queryAll();
 
     boolean insert(T entity);
 

@@ -18,6 +18,7 @@ import sun.spring.scheduler.domain.JobEntity;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
@@ -55,6 +56,12 @@ public class DispatcherTest {
     public void testUpdateStatus(){
         boolean result = dataAccessOperation.updateJobStatus(jobName, ScheduleStatus.COMPLETED);
         assertTrue(result);
+    }
+
+    @Test
+    public void testQueryList(){
+        List<JobEntity> list = dataAccessOperation.queryAll();
+        assertTrue(list.size() > 0);
     }
 
 //

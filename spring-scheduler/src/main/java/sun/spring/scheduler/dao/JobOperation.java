@@ -12,7 +12,10 @@ import sun.spring.scheduler.domain.JobEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yamorn on 2016/5/12.
@@ -61,6 +64,32 @@ public class JobOperation extends AbstractDataAccessOperation<JobEntity, String>
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<JobEntity> queryAll() {
+        String sql = String.format("SELECT * FROM %s", tableName());
+        List<Map<String, Object>> results = jdbcTemplate.queryForList(sql);
+        List<JobEntity> list = new ArrayList<>();
+        for(Map<String, Object> map : results){
+            JobEntity entity = new JobEntity();
+            entity.setJobName(convert(map.get(controlFields[0]), String.class));
+            entity.setJobStatus(convert(map.get(controlFields[1]), String.class));
+            entity.setJobLock(convert(map.get(controlFields[2]), Integer.class));
+            entity.setRunFlag(convert(map.get(controlFields[3]), Integer.class));
+            entity.setJobGroup(convert(map.get(controlFields[4]), String.class));
+            entity.setJobClassName(convert(map.get(controlFields[5]), String.class));
+            entity.setScheduleName(convert(map.get(controlFields[6]), String.class));
+            entity.setLastStartTime(convert(map.get(controlFields[7]), Date.class));
+            entity.setLastEndTime(convert(map.get(controlFields[8]), Date.class));
+            list.add(entity);
+        }
+        return list;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T convert(Object value, Class<T> type) {
+        return value != null ? (T)value: null;
     }
 
     @Override

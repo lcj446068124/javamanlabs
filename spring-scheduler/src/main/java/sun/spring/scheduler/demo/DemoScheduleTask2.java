@@ -17,7 +17,7 @@ public class DemoScheduleTask2 extends AbstractScheduleTask {
 
     @Override
     public Map<String, Object> doTask(JobContext jobContext) {
-        System.out.println("hahah");
+        System.out.println("hahah " + Thread.currentThread().getName());
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {

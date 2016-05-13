@@ -18,7 +18,7 @@ public class DemoScheduleTask extends AbstractScheduleTask{
 
     @Override
     public Map<String, Object> doTask(JobContext jobContext) {
-        System.out.println("hello");
+        System.out.println("hello " + Thread.currentThread().getName());
         return Collections.emptyMap();
     }
 }

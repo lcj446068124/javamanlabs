@@ -31,6 +31,16 @@
         </property>
     </bean>
 
+    <bean id="demoScheduleJobDispatcher2" class="sun.spring.scheduler.core.DefaultScheduleJobDispatcher" depends-on="configService">
+        <property name="scheduleTasks">
+            <list>
+                <ref bean="demoScheduleTask"/>
+                <ref bean="demoScheduleTask2"/>
+                <!--<ref bean="demoBatchScheduleTask"/>-->
+            </list>
+        </property>
+    </bean>
+
     <!--<bean id="demoScheduleTask" class="sun.spring.scheduler.core.DefaultScheduleTask">-->
     <!--<property name="scheduleTaskDetail" ref="demoTaskDetail"/>-->
     <!--<property name="scheduleJobConfig" ref="scheduleTaskConfig"/>-->
@@ -44,6 +54,7 @@
      <!--Schedule tasks-->
     <task:scheduled-tasks scheduler="schedulerTaskThreadPool">
         <task:scheduled ref="demoScheduleJobDispatcher" method="run" fixed-rate="10000"/>
+        <task:scheduled ref="demoScheduleJobDispatcher2" method="run" fixed-rate="10000"/>
     </task:scheduled-tasks>
 
 
