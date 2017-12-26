@@ -1,4 +1,4 @@
-# Spring Integration Project
+# JavaMan Labs
 ##Modules
 * spring-activemq
 * spring-mybatis
